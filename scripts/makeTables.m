@@ -8,30 +8,40 @@ addpath('Routines')
 model      = 'Model1';
 model_name = 'Baseline';
 
-load(['../results/Output' model '.mat']);
+load(['../results/18/Output' model '.mat']);
 
 
 Quant = [0.025 0.050 0.160 0.500 0.840 0.950 0.975];
 M     = size(CommonTrends, 3);
 iQ    = ceil(Quant*M);
 
+
+
 % trends
 Rshort_bar    = squeeze(CommonTrends(:, 1,:));
+Rshort_bar_us_idio = squeeze(CommonTrends(:,4,:));
+Rshort_bar_us = repmat(transpose(squeeze(CC(1, 1, :))), T, 1) .* Rshort_bar + Rshort_bar_us_idio;
+
 
 x = {}; %#ok<*AGROW>
 
-t_start = find(Year == 1980);
-t_end   = find(Year == 2016);
-dR = Rshort_bar(t_end,:) - Rshort_bar(t_start,:);
+% t_start = find(Year == 1980);
+% t_end   = find(Year == 2016);
+t_start = find(Year==1990);
+t_end = find(Year==2020);
+
+dR = Rshort_bar_us(t_end,:) - Rshort_bar_us(t_start,:);
 p = sum(dR < 0) / M;
 temp = sort(dR);
 z = temp(iQ);
 x = [x {['\makecell{' sprintf('$ %0.2f $ \\\\ $ [%0.2f, %0.2f] $ \\\\ $ (%0.2f, %0.2f) $ \\\\ $ \\langle %0.2f, %0.2f \\rangle $ \\\\ $ \\{%0.2f\\} $',...
     z(4), z(3), z(5), z(2), z(6), z(1), z(7), p) '}']}];
 
-t_start = find(Year == 1990);
-t_end   = find(Year == 2016);
-dR = Rshort_bar(t_end,:) - Rshort_bar(t_start,:);
+% t_start = find(Year == 1990);
+% t_end   = find(Year == 2016);
+t_start = find(Year == 2020);
+t_end = find(Year == 2024);
+dR = Rshort_bar_us(t_end,:) - Rshort_bar_us(t_start,:);
 p = sum(dR < 0) / M;
 temp = sort(dR);
 z = temp(iQ);
@@ -39,19 +49,9 @@ x = [x {['\makecell{' ...
     sprintf('$ %0.2f $ \\\\ $ [%0.2f, %0.2f] $ \\\\ $ (%0.2f, %0.2f) $ \\\\ $ \\langle %0.2f, %0.2f \\rangle $ \\\\ $ \\{%0.2f\\} $',...
     z(4), z(3), z(5), z(2), z(6), z(1), z(7), p) '}']}];
 
-t_start = find(Year == 1997);
-t_end   = find(Year == 2016);
-dR = Rshort_bar(t_end,:) - Rshort_bar(t_start,:);
-p = sum(dR < 0) / M;
-temp = sort(dR);
-z = temp(iQ);
-x = [x {['\makecell{' ...
-    sprintf('$ %0.2f $ \\\\ $ [%0.2f, %0.2f] $ \\\\ $ (%0.2f, %0.2f) $ \\\\ $ \\langle %0.2f, %0.2f \\rangle $ \\\\ $ \\{%0.2f\\} $',...
-    z(4), z(3), z(5), z(2), z(6), z(1), z(7), p) '}']}];
-
-row_labels = {'$ \overline{r}^{w}_{t} $'};
-style = 'c|c|c|c';
-header = {'', '1980-2016', '1990-2016', '1997-2016'};
+row_labels = {'$\overline{r}^{w}_{t}$'};
+style = 'l|c|c';
+header = {'', '1990-2020','2020-2024'};
 
 fid = fopen(['../tables/' strrep(model_name, ' ', '_') '.tex'], 'w');
 WriteTeXTable(fid, header, style, [row_labels x], [model_name '\\ \\']);
@@ -63,7 +63,7 @@ fclose(fid);
 model = 'Model2';
 model_name = 'Convenience yield';
 
-load(['../results/Output' model '.mat']);
+load(['../results/18/Output' model '.mat']);
 
 Quant = [0.025 0.050 0.160 0.500 0.840 0.950 0.975];
 M = size(CommonTrends, 3);
@@ -77,12 +77,20 @@ Ts_bar        = squeeze(CommonTrends(:, 3,:));
 Cy_bar        = squeeze(CommonTrends(:, 4,:));
 Rshort_bar    = M_bar - Cy_bar;
 
+Rshort_bar_us_idio = squeeze(CommonTrends(:,5,:));
+Rshort_bar_us = repmat(transpose(squeeze(CC(1, 1, :))), T, 1) .* Rshort_bar + Rshort_bar_us_idio;
+
+Cy_bar_us_add = Rshort_bar_us - Rshort_bar;
+Cy_bar_us = Cy_bar_us_add - Cy_bar;
+
 x = {}; %#ok<*AGROW>
 
 y = {};
-t_start = find(Year == 1980);
-t_end   = find(Year == 2016);
-dR = Rshort_bar(t_end,:) - Rshort_bar(t_start,:);
+% t_start = find(Year == 1980);
+% t_end   = find(Year == 2016);
+t_start = find(Year == 1990);
+t_end = find(Year == 2019);
+dR = Rshort_bar_us(t_end,:) - Rshort_bar_us(t_start,:);
 p = sum(dR < 0) / M;
 temp = sort(dR);
 z = temp(iQ);
@@ -96,7 +104,7 @@ z = temp(iQ);
 y = [y; {['\makecell{' ...
     sprintf('$ %0.2f $ \\\\ $ [%0.2f, %0.2f] $ \\\\ $ (%0.2f, %0.2f) $ \\\\ $ \\langle %0.2f, %0.2f \\rangle $ \\\\ $ \\{%0.2f\\} $', ...
     z(4), z(3), z(5), z(2), z(6), z(1), z(7), p) '}']}];
-dCy = Cy_bar(t_end,:) - Cy_bar(t_start,:);
+dCy = Cy_bar_us(t_end,:) - Cy_bar_us(t_start,:);
 p = sum(-dCy < 0) / M;
 temp = sort(-dCy);
 z = temp(iQ);
@@ -106,9 +114,11 @@ y = [y; {['\makecell{' ...
 x = [x y];
 
 y = {}; 
-t_start = find(Year == 1990);
-t_end   = find(Year == 2016);
-dR = Rshort_bar(t_end,:) - Rshort_bar(t_start,:);
+% t_start = find(Year == 1990);
+% t_end   = find(Year == 2016);
+t_start = find(Year == 2019);
+t_end = find(Year == 2024);
+dR = Rshort_bar_us(t_end,:) - Rshort_bar_us(t_start,:);
 p = sum(dR < 0) / M;
 temp = sort(dR);
 z = temp(iQ);
@@ -122,7 +132,7 @@ z = temp(iQ);
 y = [y; {['\makecell{' ...
     sprintf('$ %0.2f $ \\\\ $ [%0.2f, %0.2f] $ \\\\ $ (%0.2f, %0.2f) $ \\\\ $ \\langle %0.2f, %0.2f \\rangle $ \\\\ $ \\{%0.2f\\} $', ...
     z(4), z(3), z(5), z(2), z(6), z(1), z(7), p) '}']}];
-dCy = Cy_bar(t_end,:) - Cy_bar(t_start,:);
+dCy = Cy_bar_us(t_end,:) - Cy_bar_us(t_start,:);
 p = sum(-dCy < 0) / M;
 temp = sort(-dCy);
 z = temp(iQ);
@@ -131,35 +141,9 @@ y = [y; {['\makecell{' ...
     z(4), z(3), z(5), z(2), z(6), z(1), z(7), p) '}']}];
 x = [x y];
 
-y = {};
-t_start = find(Year == 1997);
-t_end   = find(Year == 2016);
-dR = Rshort_bar(t_end,:) - Rshort_bar(t_start,:);
-p = sum(dR < 0) / M;
-temp = sort(dR);
-z = temp(iQ);
-y = [y; {['\makecell{'...
-    sprintf('$ %0.2f $ \\\\ $ [%0.2f, %0.2f] $ \\\\ $ (%0.2f, %0.2f) $ \\\\ $ \\langle %0.2f, %0.2f \\rangle $ \\\\ $ \\{%0.2f\\} $', ...
-    z(4), z(3), z(5), z(2), z(6), z(1), z(7), p) '}']}];
-dM = M_bar(t_end,:) - M_bar(t_start,:);
-p = sum(dM < 0) / M;
-temp = sort(dM);
-z = temp(iQ);
-y = [y; {['\makecell{' ...
-    sprintf('$ %0.2f $ \\\\ $ [%0.2f, %0.2f] $ \\\\ $ (%0.2f, %0.2f) $ \\\\ $ \\langle %0.2f, %0.2f \\rangle $ \\\\ $ \\{%0.2f\\} $',...
-    z(4), z(3), z(5), z(2), z(6), z(1), z(7), p) '}']}];
-dCy = Cy_bar(t_end,:) - Cy_bar(t_start,:);
-p = sum(-dCy < 0) / M;
-temp = sort(-dCy);
-z = temp(iQ);
-y = [y; {['\makecell{' ...
-    sprintf('$ %0.2f $ \\\\ $ [%0.2f, %0.2f] $ \\\\ $ (%0.2f, %0.2f) $ \\\\ $ \\langle %0.2f, %0.2f \\rangle $ \\\\ $ \\{%0.2f\\} $', ...
-    z(4), z(3), z(5), z(2), z(6), z(1), z(7), p) '}']}];
-x = [x y];
-
-row_labels = {'$ \overline{r}^{w}_{t} $'; '$ \overline{m}^{w}_{t} $'; '$ -\overline{cy}^{w}_{t} $'};
-style = 'c|c|c|c';
-header = {'', '1980-2016', '1990-2016', '1997-2016'};
+row_labels = {'$\overline{r}^{w}_{t}$'; '$\overline{m}^{w}_{t}$'; '$-\overline{cy}^{w}_{t}$'};
+style = 'l|c|c';
+header = {'', '1990-2019', '2019-2024'};
 
 fid = fopen(['../tables/' strrep(model_name, ' ', '_') '.tex'], 'w');
 WriteTeXTable(fid, header, style, [row_labels x], [model_name '\\ \\']);
@@ -196,7 +180,7 @@ x = {}; %#ok<*AGROW>
 y = {};
 t_start = find(Year == 1980);
 t_end   = find(Year == 2016);
-dR = Rshort_bar(t_end,:) - Rshort_bar(t_start,:);
+dR = Rshort_bar_us(t_end,:) - Rshort_bar_us(t_start,:);
 p = sum(dR < 0) / M;
 temp = sort(dR);
 z = temp(iQ);

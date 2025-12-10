@@ -6,7 +6,7 @@
 clc;
 close all;
 
-load('../results/OutputModel2.mat')
+load('../results/18/OutputModel2.mat')
 figpath   = '../figures/';
 appenpath = [figpath 'appendix/'];
 
@@ -21,176 +21,108 @@ addpath('Routines');
 Quant = [0.025 0.160 0.500 0.840  0.975];
 M = size(CommonTrends, 3);
 
-% trends
+%% Extract Common Trends
 
-M_bar         = squeeze(CommonTrends(:, 1,:));
-Pi_bar        = squeeze(CommonTrends(:, 2,:));
-Ts_bar        = squeeze(CommonTrends(:, 3,:));
-Cy_bar        = squeeze(CommonTrends(:, 4,:));
-Rshort_bar    = M_bar - Cy_bar;
-Rlong_bar     = Rshort_bar + Ts_bar;
+codes = {'us','de','uk','fr','ca','it','jp','au','be','fi','ie','nl','no','ch','se','es','pt', 'dk'};
+Nc = numel(codes);
+T = size(CommonTrends, 1);
+Nd = size(CommonTrends, 3);
 
-Rshort_bar_us_idio = squeeze(CommonTrends(:, 5,:));
-Rshort_bar_de_idio = squeeze(CommonTrends(:, 6,:));
-Rshort_bar_uk_idio = squeeze(CommonTrends(:, 7,:));
-Rshort_bar_fr_idio = squeeze(CommonTrends(:, 8,:));
-Rshort_bar_ca_idio = squeeze(CommonTrends(:, 9,:));
-Rshort_bar_it_idio = squeeze(CommonTrends(:,10,:));
-Rshort_bar_jp_idio = squeeze(CommonTrends(:,11,:));
+M_bar = squeeze(CommonTrends(:, 1, :));
+Pi_bar = squeeze(CommonTrends(:, 2, :));
+Ts_bar = squeeze(CommonTrends(:, 3, :));
+Cy_bar = squeeze(CommonTrends(:, 4, :));
+Rshort_bar = M_bar - Cy_bar;
+Rlong_bar = Rshort_bar + Ts_bar;
 
-Pi_bar_us_idio = squeeze(CommonTrends(:,12,:));
-Pi_bar_de_idio = squeeze(CommonTrends(:,13,:));
-Pi_bar_uk_idio = squeeze(CommonTrends(:,14,:));
-Pi_bar_fr_idio = squeeze(CommonTrends(:,15,:));
-Pi_bar_ca_idio = squeeze(CommonTrends(:,16,:));
-Pi_bar_it_idio = squeeze(CommonTrends(:,17,:));
-Pi_bar_jp_idio = squeeze(CommonTrends(:,18,:));
+%% Extract Country-Specific Idiosyncratic Components
 
-Ts_bar_us_idio = squeeze(CommonTrends(:,19,:));
-Ts_bar_de_idio = squeeze(CommonTrends(:,20,:));
-Ts_bar_uk_idio = squeeze(CommonTrends(:,21,:));
-Ts_bar_fr_idio = squeeze(CommonTrends(:,22,:));
-Ts_bar_ca_idio = squeeze(CommonTrends(:,23,:));
-Ts_bar_it_idio = squeeze(CommonTrends(:,24,:));
-Ts_bar_jp_idio = squeeze(CommonTrends(:,25,:));
+base = 4;
+idx_rs = base + (1:Nc);
+idx_pi = base + Nc + (1:Nc);
+idx_ts = base + 2*Nc + (1:Nc);
 
-Rlong_bar_us_idio = Rshort_bar_us_idio + Ts_bar_us_idio;
-Rlong_bar_de_idio = Rshort_bar_de_idio + Ts_bar_de_idio;
-Rlong_bar_uk_idio = Rshort_bar_uk_idio + Ts_bar_uk_idio;
-Rlong_bar_fr_idio = Rshort_bar_fr_idio + Ts_bar_fr_idio;
-Rlong_bar_ca_idio = Rshort_bar_ca_idio + Ts_bar_ca_idio;
-Rlong_bar_it_idio = Rshort_bar_it_idio + Ts_bar_it_idio;
-Rlong_bar_jp_idio = Rshort_bar_jp_idio + Ts_bar_jp_idio;
+for i = 1:Nc
+    code = codes{i};
+    
+    Rs_idio_i = squeeze(CommonTrends(:, idx_rs(i), :));
+    Pi_idio_i = squeeze(CommonTrends(:, idx_pi(i), :));
+    Ts_idio_i = squeeze(CommonTrends(:, idx_ts(i), :));
+    
+    eval(sprintf('Rshort_bar_%s_idio = Rs_idio_i;', code));
+    eval(sprintf('Pi_bar_%s_idio = Pi_idio_i;', code));
+    eval(sprintf('Ts_bar_%s_idio = Ts_idio_i;', code));
+    eval(sprintf('Rlong_bar_%s_idio = Rs_idio_i + Ts_idio_i;', code));
+end
 
-Rshort_bar_us = repmat(transpose(squeeze(CC(1,1,:))), T, 1) .* Rshort_bar + Rshort_bar_us_idio;
-Rshort_bar_de = repmat(transpose(squeeze(CC(2,1,:))), T, 1) .* Rshort_bar + Rshort_bar_de_idio;
-Rshort_bar_uk = repmat(transpose(squeeze(CC(3,1,:))), T, 1) .* Rshort_bar + Rshort_bar_uk_idio;
-Rshort_bar_fr = repmat(transpose(squeeze(CC(4,1,:))), T, 1) .* Rshort_bar + Rshort_bar_fr_idio;
-Rshort_bar_ca = repmat(transpose(squeeze(CC(5,1,:))), T, 1) .* Rshort_bar + Rshort_bar_ca_idio;
-Rshort_bar_it = repmat(transpose(squeeze(CC(6,1,:))), T, 1) .* Rshort_bar + Rshort_bar_it_idio;
-Rshort_bar_jp = repmat(transpose(squeeze(CC(7,1,:))), T, 1) .* Rshort_bar + Rshort_bar_jp_idio;
+%% Calculate Country-Specific Trends
 
-Rlong_bar_us = Rlong_bar + Rlong_bar_us_idio;
-Rlong_bar_de = Rlong_bar + Rlong_bar_de_idio;
-Rlong_bar_uk = Rlong_bar + Rlong_bar_uk_idio;
-Rlong_bar_fr = Rlong_bar + Rlong_bar_fr_idio;
-Rlong_bar_ca = Rlong_bar + Rlong_bar_ca_idio;
-Rlong_bar_it = Rlong_bar + Rlong_bar_it_idio;
-Rlong_bar_jp = Rlong_bar + Rlong_bar_jp_idio;
+for i = 1:Nc
+    code = codes{i};
+    
+    w_rs = repmat(transpose(squeeze(CC(i, 1, :))), T, 1);
+    w_pi = repmat(transpose(squeeze(CC(i, 2, :))), T, 1);
+    
+    Rs_idio_i = eval(sprintf('Rshort_bar_%s_idio', code));
+    Pi_idio_i = eval(sprintf('Pi_bar_%s_idio', code));
+    Ts_idio_i = eval(sprintf('Ts_bar_%s_idio', code));
+    
+    Rshort_i = w_rs .* Rshort_bar + Rs_idio_i;
+    Pi_i = w_pi .* Pi_bar + Pi_idio_i;
+    Ts_i = Ts_bar + Ts_idio_i;
+    Rlong_i = Rlong_bar + Rs_idio_i + Ts_idio_i;
+    
+    eval(sprintf('Rshort_bar_%s = Rshort_i;', code));
+    eval(sprintf('Pi_bar_%s = Pi_i;', code));
+    eval(sprintf('Ts_bar_%s = Ts_i;', code));
+    eval(sprintf('Rlong_bar_%s = Rlong_i;', code));
+end
 
-Ts_bar_us    = Ts_bar + Ts_bar_us_idio;
-Ts_bar_de    = Ts_bar + Ts_bar_de_idio;
-Ts_bar_uk    = Ts_bar + Ts_bar_uk_idio;
-Ts_bar_fr    = Ts_bar + Ts_bar_fr_idio;
-Ts_bar_ca    = Ts_bar + Ts_bar_ca_idio;
-Ts_bar_it    = Ts_bar + Ts_bar_it_idio;
-Ts_bar_jp    = Ts_bar + Ts_bar_jp_idio;
 
-Pi_bar_us = repmat(transpose(squeeze(CC(1,2,:))), T, 1) .* Pi_bar + Pi_bar_us_idio;
-Pi_bar_de = repmat(transpose(squeeze(CC(2,2,:))), T, 1) .* Pi_bar + Pi_bar_de_idio;
-Pi_bar_uk = repmat(transpose(squeeze(CC(3,2,:))), T, 1) .* Pi_bar + Pi_bar_uk_idio;
-Pi_bar_fr = repmat(transpose(squeeze(CC(4,2,:))), T, 1) .* Pi_bar + Pi_bar_fr_idio;
-Pi_bar_ca = repmat(transpose(squeeze(CC(5,2,:))), T, 1) .* Pi_bar + Pi_bar_ca_idio;
-Pi_bar_it = repmat(transpose(squeeze(CC(6,2,:))), T, 1) .* Pi_bar + Pi_bar_it_idio;
-Pi_bar_jp = repmat(transpose(squeeze(CC(7,2,:))), T, 1) .* Pi_bar + Pi_bar_jp_idio;
 
-% sorted trends
+%% Sort Common Trends
 
-sRshort_bar     = sort(Rshort_bar,2);
-sPi_bar         = sort(Pi_bar,2);
-sTs_bar         = sort(Ts_bar,2);
-sCy_bar         = sort(Cy_bar,2);
-sM_bar          = sort(M_bar,2);
-sRlong_bar      = sort(Rlong_bar,2);
+sRshort_bar = sort(Rshort_bar, 2);
+sPi_bar = sort(Pi_bar, 2);
+sTs_bar = sort(Ts_bar, 2);
+sCy_bar = sort(Cy_bar, 2);
+sM_bar = sort(M_bar, 2);
+sRlong_bar = sort(Rlong_bar, 2);
 
-sRshort_bar_us = sort(Rshort_bar_us,2);
-sRshort_bar_de = sort(Rshort_bar_de,2);
-sRshort_bar_uk = sort(Rshort_bar_uk,2);
-sRshort_bar_fr = sort(Rshort_bar_fr,2);
-sRshort_bar_ca = sort(Rshort_bar_ca,2);
-sRshort_bar_it = sort(Rshort_bar_it,2);
-sRshort_bar_jp = sort(Rshort_bar_jp,2);
+%% Sort Country-Specific Trends
 
-sRlong_bar_us = sort(Rlong_bar_us,2);
-sRlong_bar_de = sort(Rlong_bar_de,2);
-sRlong_bar_uk = sort(Rlong_bar_uk,2);
-sRlong_bar_fr = sort(Rlong_bar_fr,2);
-sRlong_bar_ca = sort(Rlong_bar_ca,2);
-sRlong_bar_it = sort(Rlong_bar_it,2);
-sRlong_bar_jp = sort(Rlong_bar_jp,2);
+for k = 1:Nc
+    c = codes{k};
+    eval(sprintf('sRshort_bar_%s = sort(Rshort_bar_%s, 2);', c, c));
+    eval(sprintf('sRlong_bar_%s = sort(Rlong_bar_%s, 2);', c, c));
+    eval(sprintf('sPi_bar_%s = sort(Pi_bar_%s, 2);', c, c));
+    eval(sprintf('sTs_bar_%s = sort(Ts_bar_%s, 2);', c, c));
+    eval(sprintf('sRshort_bar_%s_idio = sort(Rshort_bar_%s_idio, 2);', c, c));
+end
 
-sPi_bar_us = sort(Pi_bar_us,2);
-sPi_bar_de = sort(Pi_bar_de,2);
-sPi_bar_uk = sort(Pi_bar_uk,2);
-sPi_bar_fr = sort(Pi_bar_fr,2);
-sPi_bar_ca = sort(Pi_bar_ca,2);
-sPi_bar_it = sort(Pi_bar_it,2);
-sPi_bar_jp = sort(Pi_bar_jp,2);
+%% Calculate Quantiles of Common Trends
 
-sRshort_bar_us_idio = sort(Rshort_bar_us_idio,2);
-sRshort_bar_de_idio = sort(Rshort_bar_de_idio,2);
-sRshort_bar_uk_idio = sort(Rshort_bar_uk_idio,2);
-sRshort_bar_fr_idio = sort(Rshort_bar_fr_idio,2);
-sRshort_bar_ca_idio = sort(Rshort_bar_ca_idio,2);
-sRshort_bar_it_idio = sort(Rshort_bar_it_idio,2);
-sRshort_bar_jp_idio = sort(Rshort_bar_jp_idio,2);
+M = size(sRshort_bar, 2);
+qInd = max(1, min(M, ceil(Quant(:)' .* M)));
 
-sTs_bar_us = sort(Ts_bar_us,2);
-sTs_bar_de = sort(Ts_bar_de,2);
-sTs_bar_uk = sort(Ts_bar_uk,2);
-sTs_bar_fr = sort(Ts_bar_fr,2);
-sTs_bar_ca = sort(Ts_bar_ca,2);
-sTs_bar_it = sort(Ts_bar_it,2);
-sTs_bar_jp = sort(Ts_bar_jp,2);
+qRshort_bar = sRshort_bar(:, qInd);
+qPi_bar = sPi_bar(:, qInd);
+qTs_bar = sTs_bar(:, qInd);
+qCy_bar = sCy_bar(:, qInd);
+qM_bar = sM_bar(:, qInd);
+qRlong_bar = sRlong_bar(:, qInd);
 
-% quantiles of the trends
+%% Calculate Quantiles of Country-Specific Trends
 
-qRshort_bar     = sRshort_bar(:,ceil(Quant*M));
-qPi_bar         = sPi_bar(:,ceil(Quant*M));
-qTs_bar         = sTs_bar(:,ceil(Quant*M));
-qCy_bar         = sCy_bar(:,ceil(Quant*M));
-qM_bar          = sM_bar(:,ceil(Quant*M));
-qRlong_bar      = sRlong_bar(:,ceil(Quant*M));
-
-qRshort_bar_us = sRshort_bar_us(:,ceil(Quant*M));
-qRshort_bar_de = sRshort_bar_de(:,ceil(Quant*M));
-qRshort_bar_uk = sRshort_bar_uk(:,ceil(Quant*M));
-qRshort_bar_fr = sRshort_bar_fr(:,ceil(Quant*M));
-qRshort_bar_ca = sRshort_bar_ca(:,ceil(Quant*M));
-qRshort_bar_it = sRshort_bar_it(:,ceil(Quant*M));
-qRshort_bar_jp = sRshort_bar_jp(:,ceil(Quant*M));
-
-qRlong_bar_us = sRlong_bar_us(:,ceil(Quant*M));
-qRlong_bar_de = sRlong_bar_de(:,ceil(Quant*M));
-qRlong_bar_uk = sRlong_bar_uk(:,ceil(Quant*M));
-qRlong_bar_fr = sRlong_bar_fr(:,ceil(Quant*M));
-qRlong_bar_ca = sRlong_bar_ca(:,ceil(Quant*M));
-qRlong_bar_it = sRlong_bar_it(:,ceil(Quant*M));
-qRlong_bar_jp = sRlong_bar_jp(:,ceil(Quant*M));
-
-qPi_bar_us = sPi_bar_us(:,ceil(Quant*M));
-qPi_bar_de = sPi_bar_de(:,ceil(Quant*M));
-qPi_bar_uk = sPi_bar_uk(:,ceil(Quant*M));
-qPi_bar_fr = sPi_bar_fr(:,ceil(Quant*M));
-qPi_bar_ca = sPi_bar_ca(:,ceil(Quant*M));
-qPi_bar_it = sPi_bar_it(:,ceil(Quant*M));
-qPi_bar_jp = sPi_bar_jp(:,ceil(Quant*M));
-
-qTs_bar_us = sTs_bar_us(:,ceil(Quant*M));
-qTs_bar_de = sTs_bar_de(:,ceil(Quant*M));
-qTs_bar_uk = sTs_bar_uk(:,ceil(Quant*M));
-qTs_bar_fr = sTs_bar_fr(:,ceil(Quant*M));
-qTs_bar_ca = sTs_bar_ca(:,ceil(Quant*M));
-qTs_bar_it = sTs_bar_it(:,ceil(Quant*M));
-qTs_bar_jp = sTs_bar_jp(:,ceil(Quant*M));
-
-qRshort_bar_us_idio = sRshort_bar_us_idio(:,ceil(Quant*M));
-qRshort_bar_de_idio = sRshort_bar_de_idio(:,ceil(Quant*M));
-qRshort_bar_uk_idio = sRshort_bar_uk_idio(:,ceil(Quant*M));
-qRshort_bar_fr_idio = sRshort_bar_fr_idio(:,ceil(Quant*M));
-qRshort_bar_ca_idio = sRshort_bar_ca_idio(:,ceil(Quant*M));
-qRshort_bar_it_idio = sRshort_bar_it_idio(:,ceil(Quant*M));
-qRshort_bar_jp_idio = sRshort_bar_jp_idio(:,ceil(Quant*M));
+for k = 1:Nc
+    c = codes{k};
+    eval(sprintf('qRshort_bar_%s = sRshort_bar_%s(:, qInd);', c, c));
+    eval(sprintf('qRlong_bar_%s = sRlong_bar_%s(:, qInd);', c, c));
+    eval(sprintf('qPi_bar_%s = sPi_bar_%s(:, qInd);', c, c));
+    eval(sprintf('qTs_bar_%s = sTs_bar_%s(:, qInd);', c, c));
+    eval(sprintf('qRshort_bar_%s_idio = sRshort_bar_%s_idio(:, qInd);', c, c));
+end
+%
 
 
 %% Figure 6a: r-bar^w
@@ -199,6 +131,7 @@ f = figure;
 
 h= bands(Year, qRshort_bar);
 box on
+xticks(1880:20:2020)
 axis([Year(1) Year(end) -3 6])
 %title('$\overline{r}^w_t$', 'Interpreter', 'latex')
 
@@ -208,31 +141,209 @@ printpdf(gcf, [figpath 'fig6a-Model2_Rbar.pdf'])
 %% Figure 6b: r-bar^w and -cy-bar^w_t
 
 figure
-
 tmax = find(Year==1870);
-
 % -qCy_bar is normalized
 h = bands(Year, qRshort_bar, -qCy_bar + (qCy_bar(tmax,3) + qRshort_bar(tmax,3)));
 hold on
-axis([Year(1) Year(end) -3 6])
+xticks(1880:20:2020)
+axis([Year(1) Year(end) -3 6])  % Changed from -3 3 to -2 5
+yticks(-3:1:6)  % Changed from -3:0.5:3 to -2:1:5 for cleaner spacing
 %title('$\overline{r}^w_t$ and $-\overline{cy}_t^w$', 'Interpreter', 'latex')
 box on
-printpdf(gcf, [figpath 'fig6b-Model2_Rbar-Cybar.pdf'])
-
+printpdf(gcf, [figpath 'fig6b-Model2_Rbar-Cybar-allcountries.pdf'])
 
 %% Figure 6c: r-bar^w_t and m-bar^w_t
 
 figure
-
+tmax=155
 % -qCy_bar is normalized
 h = bands(Year, qRshort_bar, qM_bar - (qM_bar(tmax, 3) - qRshort_bar(tmax, 3)));
 
 axis([Year(1) Year(end) -3 6])
+yticks(-3:1:6)
 %title('$\overline{r}^w_t$ and $\overline{m}_t^w$', 'Interpreter', 'latex')
 box on
+xticks(1880:20:2020)
 
-printpdf(gcf, [figpath 'fig6c-Model2_Rbar-Mbar.pdf'])
+printpdf(gcf, [figpath 'fig6c-Model2_Rbar-Mbar-allcountries.pdf'])
 
+
+%% Table Components: r-ber^w and its components
+% Define analysis periods
+periods = [
+    1980, 2019;
+    2019, 2024
+];
+
+% Define variables to analyze (matching the table structure)
+variables = struct();
+variables(1).name = 'Delta_rw';
+variables(1).index = 1;  % Rshort_bar (world real rate)
+variables(1).description = 'r̄ʷ';
+variables(1).transform = @(x) x;  % No transformation
+
+variables(2).name = 'Delta_cyw';
+variables(2).index = 4;  % Cy_bar (convenience yield)
+variables(2).description = '-c̄yʷ';
+variables(2).transform = @(x) -x;  % Negative transformation
+
+variables(3).name = 'Delta_mw';
+variables(3).index = 1;  % M_bar (will be calculated as Rshort_bar + Cy_bar)
+variables(3).description = 'm̄ʷ';
+variables(3).transform = @(x, cy) x + cy;  % m̄ʷ = r̄ʷ + c̄yʷ
+
+% Initialize results structure
+Table1 = struct();
+counter = 1;
+
+% Loop over variables and periods
+for v = 1:length(variables)
+    for p = 1:size(periods, 1)
+        start_year = periods(p, 1);
+        end_year = periods(p, 2);
+        
+        % Calculate change over the period (all draws)
+        start_idx = find(Year == start_year, 1);
+        end_idx = find(Year == end_year, 1);
+        
+        if isempty(start_idx) || isempty(end_idx)
+            warning('Year %d or %d not found in data', start_year, end_year);
+            continue;
+        end
+        
+        % Extract data based on variable type
+        if v == 3  % m̄ʷ = r̄ʷ + c̄yʷ
+            start_rw = squeeze(CommonTrends(start_idx, 1, :));  % Rshort_bar
+            end_rw = squeeze(CommonTrends(end_idx, 1, :));
+            start_cy = squeeze(CommonTrends(start_idx, 4, :));  % Cy_bar  
+            end_cy = squeeze(CommonTrends(end_idx, 4, :));
+            
+            start_data = start_rw + start_cy;
+            end_data = end_rw + end_cy;
+        else
+            % Regular variables
+            start_data = squeeze(CommonTrends(start_idx, variables(v).index, :));
+            end_data = squeeze(CommonTrends(end_idx, variables(v).index, :));
+            
+            % Apply transformation
+            if v == 2  % -c̄yʷ
+                start_data = variables(v).transform(start_data);
+                end_data = variables(v).transform(end_data);
+            end
+        end
+        
+        % Calculate change
+        change_data = end_data - start_data;
+        
+        % Store results
+        Table1(counter).(variables(v).name) = change_data;
+        Table1(counter).Years = [start_year, end_year];
+        Table1(counter).Variable = variables(v).description;
+        Table1(counter).VarIndex = v;
+        
+        counter = counter + 1;
+    end
+end
+
+% Display results and create formatted table
+clc
+
+% Initialize storage for table data
+table_data = {};
+row_labels = {};
+var_labels = {};
+
+% Process each result
+result_counter = 1;
+for v = 1:length(variables)
+    for p = 1:size(periods, 1)
+        if result_counter > length(Table1)
+            break;
+        end
+        
+        period_str = sprintf('%d-%d', Table1(result_counter).Years(1), Table1(result_counter).Years(2));
+        var_name = variables(v).name;
+        data = Table1(result_counter).(var_name);
+        
+        % Calculate statistics
+        median_val = quantile(data, 0.5);
+        ci_lower = quantile(data, 0.05);
+        ci_upper = quantile(data, 0.95);
+        
+        % Calculate p-value (two-tailed test that change = 0)
+        prob_positive = mean(data > 0);
+        prob_negative = mean(data < 0);
+        p_value = 2 * min(prob_positive, prob_negative);
+        
+        % Store data for table
+        table_data{result_counter, 1} = sprintf('%.2f', median_val);
+        table_data{result_counter, 2} = sprintf('(%.2f, %.2f)', ci_lower, ci_upper);
+        table_data{result_counter, 3} = sprintf('%.3f', p_value);
+        
+        if p == 1  % First period for this variable
+            var_labels{result_counter} = Table1(result_counter).Variable;
+        else
+            var_labels{result_counter} = '';  % Empty for subsequent periods
+        end
+        row_labels{result_counter} = period_str;
+        
+        % Also display in console
+        fprintf('\n-----------------[%s: %s]------------------\n', ...
+            Table1(result_counter).Variable, period_str);
+        fprintf('Median: %.4f\n', median_val);
+        fprintf('90%% posterior coverage: (%.4f, %.4f)\n', ci_lower, ci_upper);
+        fprintf('P-value (H0: change = 0): %.4f\n', p_value);
+        
+        result_counter = result_counter + 1;
+    end
+end
+
+% Create and display formatted table
+fprintf('\n\n=== FORMATTED TABLE ===\n');
+fprintf('%-8s | %-12s | %-10s | %-20s | %-10s\n', 'Variable', 'Period', 'Median', '90% CI', 'P-value');
+fprintf('%s\n', repmat('-', 1, 68));
+for j = 1:length(Table1)
+    fprintf('%-8s | %-12s | %-10s | %-20s | %-10s\n', ...
+        var_labels{j}, row_labels{j}, table_data{j, 1}, table_data{j, 2}, table_data{j, 3});
+end
+
+% Generate LaTeX table
+latex_filename = 'world_trends_changes.tex';
+fid = fopen(latex_filename, 'w');
+
+fprintf(fid, '\\begin{table}[htbp]\n');
+fprintf(fid, '\\centering\n');
+fprintf(fid, '\\caption{Changes in World Economic Trends}\n');
+fprintf(fid, '\\label{tab:world_trends_changes}\n');
+fprintf(fid, '\\begin{tabular}{llccc}\n');
+fprintf(fid, '\\toprule\n');
+fprintf(fid, 'Variable & Period & Median & 90\\%% Posterior Interval & P-value \\\\\n');
+fprintf(fid, '\\midrule\n');
+
+for j = 1:length(Table1)
+    if ~isempty(var_labels{j})  % Print variable name only for first occurrence
+        fprintf(fid, '%s & %s & %s & %s & %s \\\\\n', ...
+            var_labels{j}, row_labels{j}, table_data{j, 1}, table_data{j, 2}, table_data{j, 3});
+    else  % Empty variable column for subsequent periods
+        fprintf(fid, ' & %s & %s & %s & %s \\\\\n', ...
+            row_labels{j}, table_data{j, 1}, table_data{j, 2}, table_data{j, 3});
+    end
+end
+
+fprintf(fid, '\\bottomrule\n');
+fprintf(fid, '\\end{tabular}\n');
+fprintf(fid, '\\begin{tablenotes}\n');
+fprintf(fid, '\\small\n');
+fprintf(fid, '\\item Notes: Changes in world economic trends computed from posterior draws.\n');
+fprintf(fid, '\\item 90\\%% posterior intervals show the 5th and 95th percentiles.\n');
+fprintf(fid, '\\item P-values test the null hypothesis that the change equals zero (two-tailed).\n');
+fprintf(fid, '\\item $\\overline{r}^w$: world real interest rate; $-\\overline{cy}^w$: negative world convenience yield; $\\overline{m}^w$: world nominal rate.\n');
+fprintf(fid, '\\end{tablenotes}\n');
+fprintf(fid, '\\end{table}\n');
+
+fclose(fid);
+
+fprintf('\nLaTeX table saved to: %s\n', latex_filename);
 
 
 %% -------------------------- APPENDIX FIGURES ---------------------------- %%
@@ -303,9 +414,10 @@ hline                  = refline(0);
 hline.HandleVisibility = 'off';
 hline.Color            = 'k';
 
-xlim([Year(1) Year(end)])
-ylim([-3 6])
-yticks(-2:2:6)
+xlim([Year(137) Year(end)])
+xticks(2008:4:2024)
+ylim([-3 3])
+yticks(-2:0.5:2)
 
 legend([p_us p_de p_uk p_fr p_ca p_it p_jp],...
     {'us', 'de', 'uk', 'fr', 'ca', 'it', 'jp'},...
@@ -319,7 +431,7 @@ legend([p_us p_de p_uk p_fr p_ca p_it p_jp],...
 legend boxoff;
 box on;
 
-printpdf(gcf, [appenpath 'figa14b-Model2_Rshortbar-countries.pdf'])
+printpdf(gcf, [appenpath 'figa14b-Model2_Rshortbar-countries-recent.pdf'])
 
 %% A15a: Trends and Observables for Inflation, Convenience Yield Model
 
@@ -436,7 +548,7 @@ legend boxoff;
 
 printpdf(gcf, [appenpath 'figa16b-Model2_Rbar-tsbar-countries.pdf'])
 
-%% A17: Country-Specfic Trends r_it and Observables, Convenience Yield Model
+% A17: Country-Specfic Trends r_it and Observables, Convenience Yield Model
 fSize = 15;  % Font size
 
 f = figure;
@@ -445,7 +557,7 @@ Rshort_country_average = ...
     mean([Stir_us-Infl_us, Stir_de-Infl_de, Stir_uk-Infl_uk,...
           Stir_fr-Infl_fr, Stir_ca-Infl_ca, Stir_it-Infl_it, ...
           Stir_jp-Infl_jp], 2, 'omitnan');
-      
+
 h = PlotStatesShaded(Year, qRshort_bar);
 hold on; box on; axis([Year(1) Year(end) -3 6]);
 %title('World', 'Interpreter', 'latex')
