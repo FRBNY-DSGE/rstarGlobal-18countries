@@ -8,7 +8,7 @@ These scripts were produced using MATLAB R2020a.
 
 ## Replicating figures and tables
 
-The [*“The Fall 2025 Brookings Papers on Economic Activity: Discussion of ‘What next for r*?’ by Łukasz Rachel,” discussed by Marco Del Negro*]() discussion uses Model 1, which estimates the baseline model with prior to variance of innovation to the trend component equal to 1, and Model 2, which estimates the model with a convenience yield. The mentioned figures are referenced to in this codebase as 'Figure 1' and 'Figure 3b'.
+[*“The Fall 2025 Brookings Papers on Economic Activity: Discussion of ‘What next for r*?’ by Łukasz Rachel,” discussed by Marco Del Negro*]() uses Model 1, which estimates the baseline model with prior to variance of innovation to the trend component equal to 1, and Model 2, which estimates the model with a convenience yield. The mentioned figures are referenced to in this codebase as 'Figure 1' and 'Figure 3b'.
 
 - load updated data into data file: `indata/DataInflShortLongUpdated.xlsx`
 - run Model 1
