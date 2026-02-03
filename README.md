@@ -12,7 +12,7 @@ The `update` folder contains CSV files of updated estimates of the trends in r* 
 
 **18 Country-specific r\***  
 ![18 Country-specific r*](https://github.com/FRBNY-DSGE/rstarGlobal-18countries/blob/master/update/qRshort_bar_m2.png)  
-*Source: Author's calculations. The chart plots the posterior median estimates of r* for the 18 countries in the sample.*
+*Source: Author's calculations. The chart plots the posterior median estimates of r* for the 18 countries in the sample.
 
 
 ## Required software
