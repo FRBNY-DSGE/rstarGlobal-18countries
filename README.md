@@ -8,11 +8,11 @@ The `update` folder contains CSV files of updated estimates of the trends in r* 
 
 **US/Global r\***  
 ![US/Global r*](https://github.com/FRBNY-DSGE/rstarGlobal-18countries/blob/master/update/qRshort_bar_us_global_m1.png)  
-*Source: Author's calculations. The dashed black line shows the posterior median of global r* and the shaded areas show the 68 and 95 percent posterior coverage intervals. The dotted black line shows the posterior median of U.S. r*  
+Source: Author's calculations. The dashed black line shows the posterior median of global r* and the shaded areas show the 68 and 95 percent posterior coverage intervals. The dotted black line shows the posterior median of U.S. r*  
 
 **18 Country-specific r\***  
 ![18 Country-specific r*](https://github.com/FRBNY-DSGE/rstarGlobal-18countries/blob/master/update/qRshort_bar_m2.png)  
-*Source: Author's calculations. The chart plots the posterior median estimates of r* for the 18 countries in the sample.
+Source: Author's calculations. The chart plots the posterior median estimates of r* for the 18 countries in the sample.
 
 
 ## Required software
