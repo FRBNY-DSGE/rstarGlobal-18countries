@@ -2,6 +2,19 @@
 
 “The Fall 2025 Brookings Papers on Economic Activity *["Discussion of 'What next for r*' by Lukasz Rachel"]() by Marco Del Negro extends the Global r* model in *[Global Trends in Interest Rates](https://doi.org/10.1016/j.jinteco.2019.01.010)* by Marco Del Negro, Domenico Giannone, Marc Giannoni, and Andrea Tambalotti to 18 countries.
 
+
+# Update
+The `update` folder contains CSV files of updated estimates of the trends in r* using data on short- and long-term yields, and inflation, computed using the rstarGlobal model. The US/Global r* (figure above) and 18 country-specific r* (figure below) figures show updated estimates of r*.
+
+**US/Global r\***  
+![US/Global r*](https://github.com/FRBNY-DSGE/rstarGlobal-18countries/blob/master/update/qRshort_bar_us_global_m1.png)  
+*Source: Author's calculations. The dashed black line shows the posterior median of global r* and the shaded areas show the 68 and 95 percent posterior coverage intervals. The dotted black line shows the posterior median of U.S. r\**  
+
+**18 Country-specific r\***  
+![18 Country-specific r*](https://github.com/FRBNY-DSGE/rstarGlobal-18countries/blob/master/update/qRshort_bar_m2.png)  
+*Source: Author's calculations. The chart plots the posterior median estimates of r* for the 18 countries in the sample.*
+
+
 ## Required software
 
 These scripts were produced using MATLAB R2020a.
