@@ -39,6 +39,8 @@ import warnings
 
 import pandas as pd
 
+from api_keys import BDF_KEY, FRED_KEY  
+
 warnings.simplefilter("ignore")
 
 # --------------------------------------------------------------------------- #
@@ -62,8 +64,6 @@ FETCH_START = 2021     # first year to (re)fetch
 FETCH_END = 2025       # last (complete) year to fetch
 SR_OECD_FROM = 2025    # stir_usa / stir_uk: MeasuringWorth before this, OECD IR3TIB from here
 
-FRED_KEY = "fbe37f1a10f8fa24ae08a496b2434cc2"       # from germany_sr.ipynb
-BDF_KEY = "100a2b4267441ccea6192c2c298a596e639475fd80790a1955846c69"  # france_sr.ipynb
 
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
