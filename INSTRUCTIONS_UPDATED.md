@@ -60,6 +60,11 @@ the two knobs below, so updating the sample is short. **Full checklist:**
 
 5. **Estimate, then plot** — §3 and §4 below.
 
+6. **If you make the tables, bump `Tables.m`'s year anchors.** `Tables.m` (§6)
+   hard-codes the summary window as `find(Year==2019)`→`find(Year==2025)`; update
+   the `2025` end-year anchors (two blocks) to the new year. `makeTables.m` and the
+   figure scripts have no other end-year anchors.
+
 That's it. There are no other year references to chase in the figure scripts.
 
 ---
@@ -169,8 +174,23 @@ automatically.
 
 ## 6. Optional: tables
 
-`makeTables.m` builds the LaTeX tables into `tables/` (block `Table A1a` for the
-Model-1 decomposition, `Table A1b` for Model 2).
+Two table scripts, both writing LaTeX into `tables/`:
+
+- **`makeTables.m`** — the appendix decomposition tables (block `Table A1a` for the
+  Model-1 decomposition, `Table A1b` for Model 2).
+- **`Tables.m`** — Global vs US r\* summary tables: the change in r-bar over
+  1990–2019 and 2019–2025 (posterior median, 90% interval, and P(change<0) per
+  cell), with Model 2 additionally decomposed into r\*, −cy, and "other" (m-bar).
+  Writes `tables/GlobalUS_Model1.tex`, `GlobalUS_Model2.tex`, and
+  `GlobalUS_Combined.tex`. It `load`s the full `results/18/OutputModel1.mat` and
+  `OutputModel2.mat`, so run it as a batch job with ~80 GB via its driver:
+  ```bash
+  S=/data/dsge_data_dir/mdn/rstarGlobal-18countries/scripts
+  matlab20a-batch-withemail 80 $S/run_tables.m
+  ```
+  > It hard-codes the end year as `find(Year==2025)` (two blocks) — bump those when
+  > you move to a new sample year (see §0 step 6). `Tables.m` is a companion to
+  > `makeTables.m`, not a replacement.
 
 ---
 
