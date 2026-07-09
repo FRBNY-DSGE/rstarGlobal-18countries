@@ -15,3 +15,8 @@ scripts/world_*_changes.tex
 # Local backups
 *.stale_backup
 *_pre*backup.xlsx
+
+# Data-pull validation scratch
+indata_check/
+scripts/data/_cache/
+scripts/data/master-pull_check.py

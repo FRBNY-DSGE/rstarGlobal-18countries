@@ -598,15 +598,28 @@ def ltir_uk_boe():
     box = {}
 
     def _run():
-        asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+        # WindowsProactorEventLoopPolicy only exists on Windows (it is required
+        # there for Playwright's subprocess transport). On Linux/macOS the
+        # attribute does not exist, so calling it unconditionally raised
+        # AttributeError in this worker thread and killed the BoE/UK long-rate
+        # fetch. Guard by platform; the default loop policy is correct elsewhere.
+        if sys.platform.startswith("win"):
+            asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         box["csv"] = loop.run_until_complete(_fetch())
         loop.close()
 
-    t = threading.Thread(target=_run)
+    # daemon=True + a bounded join so a headless Playwright launch that never
+    # completes (common on Linux compute nodes: Chromium never spawns from this
+    # non-main-thread event loop) degrades to a graceful [FAIL] fallback instead
+    # of hanging the entire pull forever. See PIPELINE_BUGS.md BUG 2.
+    t = threading.Thread(target=_run, daemon=True)
     t.start()
-    t.join()
+    t.join(timeout=150)
+    if t.is_alive() or "csv" not in box:
+        raise RuntimeError("BoE UK long-rate fetch did not complete within 150s "
+                           "(headless Playwright hang); leaving ltir_uk unchanged")
     raw = pd.read_csv(io.BytesIO(box["csv"]))
     raw.columns = ["date", "lr"]
     raw["date"] = pd.to_datetime(raw["date"], format="%d %b %y", errors="coerce")
