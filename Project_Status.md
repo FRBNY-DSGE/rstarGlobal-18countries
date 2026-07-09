@@ -40,6 +40,16 @@ the full list of estimation/figure repairs (data wiring, `codes{}` braces, the
 Denmark wiring in Models 1 & 2, `var01` regeneration, and figure-script fixes
 including the `Data_MY`-ends-2016 / Figure 5 length fix).
 
+**Tables.** `Tables.m` (companion to `makeTables.m`) produces the Global-vs-US
+r\* summary tables — change in r-bar over 1990–2019 and 2019–2025 (median, 90%
+interval, P(change<0)), Model 2 decomposed into r\*/−cy/other — writing
+`tables/GlobalUS_{Model1,Model2,Combined}.tex` via driver `run_tables.m` (~80 GB,
+loads `results/18/OutputModel{1,2}.mat`). It was consolidated from an identical
+`Tables.m`/`Tables_Elena.m` pair and verified to reproduce the reference `.tex`
+byte-for-byte on the committed outputs. Its `find(Year==2025)` window anchors (two
+blocks) must be bumped on a new-year update. `makeTables.m` builds the appendix
+A1a/A1b decomposition tables and is unchanged.
+
 ## 3. Data-pull validation (this session's check)
 
 **Method:** copied `master-pull.py` to a throwaway script pointing `SRC_XLSX` at
@@ -102,7 +112,8 @@ Data pipeline (details in PIPELINE_BUGS.md):
 Branch **`fix/18country-2025`** off `master` (master untouched, nothing pushed):
 - `4e47506` — fixed scripts + batch drivers + Fixes.md + INSTRUCTIONS_UPDATED.md + `.gitignore`.
 - `72c90e2` — 2025 workbook wired to plain name + `scripts/data/{DATA.md,INSTRUCTIONS.md}`.
-- (this commit) — `master-pull.py` pipeline fixes + DATA_UPDATED.md + PIPELINE_BUGS.md + Project_Status.md.
+- `ed1780e` — `master-pull.py` pipeline fixes + DATA_UPDATED.md + PIPELINE_BUGS.md + Project_Status.md.
+- `71cacc8` — `Tables.m` (Global/US r\* tables) + `run_tables.m` + INSTRUCTIONS_UPDATED.md tables docs.
 
 Excluded from git throughout: `scripts/data/api_keys.py` (secrets), `results/`
 (20–38 GB `.mat`), SGE logs, and test scratch (`indata_check/`, `_cache/`).
