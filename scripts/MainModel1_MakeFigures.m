@@ -128,6 +128,7 @@ printpdf(gcf, [figpath 'fig1-Model1_Rshortbar-us.pdf'])
 % figure
 % 
 % % Load results using disperse prior for variance of innovations to trends
+if exist('../results/OutputModel1_var01.mat', 'file')
 temp = load('../results/OutputModel1_var01.mat', 'CommonTrends');
 CommonTrends_var01 = temp.CommonTrends;
 Rshort_bar_var01   = squeeze(CommonTrends_var01(:, 1,:));
@@ -161,6 +162,9 @@ xticks(1880:20:2020)
 
 printpdf(gcf, [figpath 'fig2-Model1_var01_Rbar-MA.pdf'])
 saveas(gcf, 'figure1.eps', 'epsc');
+else
+    warning('Skipping Figure 2 (var01): ../results/OutputModel1_var01.mat not found — var01 was not estimated.');
+end
 
 %% Figure 3a: Trends and Observables for Short-Term Real Rates, Baseline Model
 figure
@@ -188,6 +192,7 @@ country_colors = [
     1    0.7  0;
     0.8  0    0.2;
     0    0.7  0.3;
+    0    0.45 0.74;
 ];
 
 ph = gobjects(1, numel(codes));
@@ -437,10 +442,10 @@ fprintf('\nLaTeX table saved to: %s\n', latex_filename);
 % printpdf(gcf, [figpath 'fig4a-Model1_Pibar-obs.pdf'])
 %% Figure 4a: Trends and Observables for Inflation, Baseline Model
 figure;
-PlotStatesShaded(Year, qPi_bar); 
+PlotStatesShaded(Year, qPi_bar);
 hold on;
 
-codes = {'us','de','uk','fr','ca','it','jp','au','be','fi','ie','nl','no','ch','se','es','pt'};
+codes = {'us','de','uk','fr','ca','it','jp','au','be','fi','ie','nl','no','ch','se','es','pt', 'dk'};
 labels = upper(codes);
 
 country_colors = [
@@ -461,6 +466,7 @@ country_colors = [
     1    0.7  0;
     0.8  0    0.2;
     0    0.7  0.3;
+    0    0.45 0.74;
 ];
 
 ph = gobjects(1, numel(codes));
@@ -502,10 +508,10 @@ figure;
 median = quantile(CommonTrends(:,2,:), .5, 3);
 plotMedian = plot(Year, median, 'k--', 'LineWidth', 2, ...
     'HandleVisibility', 'off');
-hold on; 
+hold on;
 box on;
 
-codes = {'us','de','uk','fr','ca','it','jp','au','be','fi','ie','nl','no','ch','se','es','pt'};
+codes = {'us','de','uk','fr','ca','it','jp','au','be','fi','ie','nl','no','ch','se','es','pt', 'dk'};
 labels = upper(codes);
 
 country_colors = [
@@ -526,6 +532,7 @@ country_colors = [
     1    0.7  0;
     0.8  0    0.2;
     0    0.7  0.3;
+    0    0.45 0.74;
 ];
 
 ph = gobjects(1, numel(codes));
@@ -586,15 +593,22 @@ MY_it = MY(:,7);
 MY_jp = MY(:,8);
 MY_G7 = MY(:,9);
 
-% Compute fitted values
-fit_us_MY = [ones(T, 1) MY_us] * regress(qRshort_bar_us(:, 3), [ones(T, 1) MY_us]);
-fit_de_MY = [ones(T, 1) MY_de] * regress(qRshort_bar_de(:, 3), [ones(T, 1) MY_de]);
-fit_uk_MY = [ones(T, 1) MY_uk] * regress(qRshort_bar_uk(:, 3), [ones(T, 1) MY_uk]);
-fit_fr_MY = [ones(T, 1) MY_fr] * regress(qRshort_bar_fr(:, 3), [ones(T, 1) MY_fr]);
-fit_ca_MY = [ones(T, 1) MY_ca] * regress(qRshort_bar_ca(:, 3), [ones(T, 1) MY_ca]);
-fit_it_MY = [ones(T, 1) MY_it] * regress(qRshort_bar_it(:, 3), [ones(T, 1) MY_it]);
-fit_jp_MY = [ones(T, 1) MY_jp] * regress(qRshort_bar_jp(:, 3), [ones(T, 1) MY_jp]);
-fit_G7_MY = [ones(T, 1) MY_G7] * regress(qRshort_bar   (:, 3), [ones(T, 1) MY_G7]);
+% Compute fitted values.
+% Data_MY.xlsx ends in 2016 while the estimation sample now runs to 2025, so
+% the MY_* series are shorter than T. Fit the regression on the overlapping
+% years (1:nMY) and NaN-pad the fitted line for the post-MY years so it plots
+% at full length (the fitted line simply stops at 2016).
+nMY   = size(MY, 1);
+padMY = @(v) [v(:); nan(T - nMY, 1)];
+fitMY = @(q, x) [ones(T,1) padMY(x)] * regress(q(1:nMY, 3), [ones(nMY,1) x(:)]);
+fit_us_MY = fitMY(qRshort_bar_us, MY_us);
+fit_de_MY = fitMY(qRshort_bar_de, MY_de);
+fit_uk_MY = fitMY(qRshort_bar_uk, MY_uk);
+fit_fr_MY = fitMY(qRshort_bar_fr, MY_fr);
+fit_ca_MY = fitMY(qRshort_bar_ca, MY_ca);
+fit_it_MY = fitMY(qRshort_bar_it, MY_it);
+fit_jp_MY = fitMY(qRshort_bar_jp, MY_jp);
+fit_G7_MY = fitMY(qRshort_bar,    MY_G7);
 
 figure
 p_wd = PlotStatesShaded(Year, qRshort_bar); hold on;

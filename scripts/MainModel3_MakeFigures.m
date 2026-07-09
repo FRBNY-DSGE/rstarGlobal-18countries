@@ -28,7 +28,7 @@ tmax = find(Year==1870);
 
 %% Extract Common Trends
 
-codes = {'us','de','uk','fr','ca','it','jp','au','be','fi','ie','nl','no','ch','se','es','pt'};
+codes = {'us','de','uk','fr','ca','it','jp','au','be','fi','ie','nl','no','ch','se','es','pt', 'dk'};
 Nc = numel(codes);
 T = size(CommonTrends, 1);
 Nd = size(CommonTrends, 3);

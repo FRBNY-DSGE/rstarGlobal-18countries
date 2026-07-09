@@ -1,0 +1,17 @@
+# Secrets — API keys must stay out of version control (see scripts/data/api_keys.py)
+scripts/data/api_keys.py
+
+# Large model outputs (20-38 GB .mat files, plus the figure-input copies)
+results/
+
+# SGE batch-job logs
+*.o[0-9]*
+*.e[0-9]*
+
+# MATLAB scratch outputs written into scripts/
+scripts/*.eps
+scripts/world_*_changes.tex
+
+# Local backups
+*.stale_backup
+*_pre*backup.xlsx

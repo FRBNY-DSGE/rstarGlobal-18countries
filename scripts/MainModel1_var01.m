@@ -1,5 +1,7 @@
-%% MainModel1_var01: Baseline model with variance of innovation to trend set to 1.
-
+%% MainModel1_var01.m  Baseline model with a DISPERSE prior for the variance
+%                  of innovations to the trend (SC0tr divisor = 1 instead of
+%                  100). Regenerated from MainModel1.m (18-country, 74-col
+%                  Cons layout). Results are saved as "OutputModel1_var01.mat."
 
 %% Initial setup
 
@@ -9,7 +11,7 @@ filename = '../results/OutputModel1_var01.mat';  % Output filename
 
 addpath Routines
 
-[DATA,TEXT] = xlsread('../indata/DataInflShortLongUpdated.xlsx');
+[DATA,TEXT] = xlsread('../indata/DataInflShortLongConsUpdated.xlsx');  % 74-col cons layout (indexing below skips baa_usa); Model 1 ignores the rconpc columns
 Year = DATA(:,1);
 
 Ndraws  =  100000;  % Number of MCMC draws
@@ -39,12 +41,12 @@ Mnem = TEXT(2:end);
 %19)   'cpi_jp'
 %20)   'stir_jp'
 %21)   'ltir_jp'
-%23)   'cpi_au'  % Added Australia
-%24)   'stir_au' % Added Australia
-%25)   'ltir_au' % Added Australia
-%27)   'cpi_be'  % Added Belgium
-%28)   'stir_be' % Added Belgium
-%29)   'ltir_be' % Added Belgium
+%23)   'cpi_au' 
+%24)   'stir_au' 
+%25)   'ltir_au' 
+%27)   'cpi_be' 
+%28)   'stir_be' 
+%29)   'ltir_be'
 %31)   'cpi_fi'
 %32)   'stir_fi'
 %33)   'ltir_fi'
@@ -69,86 +71,28 @@ Mnem = TEXT(2:end);
 %59)   'cpi_pt'
 %60)   'stir_pt'
 %61)   'ltir_pt'
+%63)   'cpi_dk
+%64)   'stir_dk'
+%65)   'ltir_dk'
 
-Country = {'US','DE','UK','FR','CA','IT','JP','AU','BE', 'FI', 'IE', 'NL', 'NO', 'CH', 'SE', 'ES', 'PT'};
-%X = DATA(:,2:60);  % Include data for 17 countries
-X = DATA(:, 2:end); %Only data from Australia
+Country = {'US','DE','UK','FR','CA','IT','JP','AU','BE', 'FI', 'IE', 'NL', 'NO', 'CH', 'SE', 'ES', 'PT', 'DK'};
+%X = DATA(:,2:60);  % Include data for 18 countries
+codes = {'us','de','uk','fr','ca','it','jp','au','be','fi','ie','nl','no','ch','se','es','pt', 'dk'};
+Nc = numel(codes);
+X = DATA(:,2:end);
+country_start = [0, 4, 8, 12, 16, 20, 24, 29, 33, 37, 41, 45, 49, 53, 57, 61, 65, 69];
 
-
-Price_us = X(:,1);
-Price_de = X(:,4);
-Price_uk = X(:,7);
-Price_fr = X(:,10);
-Price_ca = X(:,13);
-Price_it = X(:,16);
-Price_jp = X(:,19);
-Price_au = X(:,23);  % Australia CPI
-Price_be = X(:,27);  % Belgium CPI
-Price_fi = X(:, 31);
-Price_ie = X(:, 35);
-Price_nl = X(:, 39);
-Price_no = X(:, 43);
-Price_ch = X(:, 47);
-Price_se = X(:, 51);
-Price_es = X(:, 55);
-Price_pt = X(:, 59);
-
-Stir_us = X(:,2);
-Stir_de = X(:,5);
-Stir_uk = X(:,8);
-Stir_fr = X(:,11);
-Stir_ca = X(:,14);
-Stir_it = X(:,17);
-Stir_jp = X(:,20);
-Stir_au = X(:,24);  % Australia short-term interest rate
-Stir_be = X(:,28);  % Belgium short-term interest rate
-Stir_fi = X(:, 32);
-Stir_ie = X(:, 36);
-Stir_nl = X(:, 40);
-Stir_no = X(:, 44);
-Stir_ch = X(:, 48);
-Stir_se = X(:, 52);
-Stir_es = X(:, 56);
-Stir_pt = X(:, 60);
-
-Ltir_us = X(:,3);
-Ltir_de = X(:,6);
-Ltir_uk = X(:,9);
-Ltir_fr = X(:,12);
-Ltir_ca = X(:,15);
-Ltir_it = X(:,18);
-Ltir_jp = X(:,21);
-Ltir_au = X(:,25);  % Australia long-term interest rate
-Ltir_be = X(:,29);  % Belgium long-term interest rate
-Ltir_fi = X(:, 33);
-Ltir_ie = X(:, 37);
-Ltir_nl = X(:, 41);
-Ltir_no = X(:, 45);
-Ltir_ch = X(:, 49);
-Ltir_se = X(:, 53);
-Ltir_es = X(:, 57);
-Ltir_pt = X(:, 61);
-
-
-%Inflation rate: national currency
-Infl_us   = [NaN;(Price_us(2:end)./Price_us(1:end-1)-1)*100];
-Infl_de   = [NaN;(Price_de(2:end)./Price_de(1:end-1)-1)*100];
-Infl_uk   = [NaN;(Price_uk(2:end)./Price_uk(1:end-1)-1)*100];
-Infl_fr   = [NaN;(Price_fr(2:end)./Price_fr(1:end-1)-1)*100];
-Infl_ca   = [NaN;(Price_ca(2:end)./Price_ca(1:end-1)-1)*100];
-Infl_it   = [NaN;(Price_it(2:end)./Price_it(1:end-1)-1)*100];
-Infl_jp   = [NaN;(Price_jp(2:end)./Price_jp(1:end-1)-1)*100];
-Infl_au   = [NaN;(Price_au(2:end)./Price_au(1:end-1)-1)*100];  % Added Australia
-Infl_be   = [NaN;(Price_be(2:end)./Price_be(1:end-1)-1)*100];  % Added Belgium
-Infl_fi = [NaN; (Price_fi(2:end)./Price_fi(1:end-1) - 1) * 100];
-Infl_ie = [NaN; (Price_ie(2:end)./Price_ie(1:end-1) - 1) * 100];
-Infl_nl = [NaN; (Price_nl(2:end)./Price_nl(1:end-1) - 1) * 100];
-Infl_no = [NaN; (Price_no(2:end)./Price_no(1:end-1) - 1) * 100];
-Infl_ch = [NaN; (Price_ch(2:end)./Price_ch(1:end-1) - 1) * 100];
-Infl_se = [NaN; (Price_se(2:end)./Price_se(1:end-1) - 1) * 100];
-Infl_es = [NaN; (Price_es(2:end)./Price_es(1:end-1) - 1) * 100];
-Infl_pt = [NaN; (Price_pt(2:end)./Price_pt(1:end-1) - 1) * 100];
-
+for i = 1:Nc
+    code = codes{i};
+    start_col = country_start(i);
+    
+    eval(sprintf('Price_%s = X(:, start_col + 1);', code));
+    eval(sprintf('Stir_%s = X(:, start_col + 2);', code));
+    eval(sprintf('Ltir_%s = X(:, start_col + 3);', code));
+    eval(sprintf('Cons_%s = X(:, start_col + 4);', code));
+    eval(sprintf('Dcons_%s = [NaN; (Cons_%s(2:end, :) ./ Cons_%s(1:end - 1) - 1)*100];', code, code, code));
+    eval(sprintf('Infl_%s = [NaN; (Price_%s(2:end) ./ Price_%s(1:end-1)-1)*100];', code, code, code));
+end
 
 Y = [
     Stir_us...
@@ -158,8 +102,8 @@ Y = [
     Stir_ca...
     Stir_it...
     Stir_jp...
-    Stir_au...  % Added Australia
-    Stir_be...  % Added Belgium
+    Stir_au...  
+    Stir_be...  
     Stir_fi...
     Stir_ie...
     Stir_nl...
@@ -168,6 +112,7 @@ Y = [
     Stir_se...
     Stir_es...
     Stir_pt...
+    Stir_dk...
     Infl_us...
     Infl_de...
     Infl_uk...
@@ -175,8 +120,8 @@ Y = [
     Infl_ca...
     Infl_it...
     Infl_jp...
-    Infl_au...  % Added Australia
-    Infl_be...  % Added Belgium
+    Infl_au...  
+    Infl_be...  
     Infl_fi...
     Infl_ie...
     Infl_nl...
@@ -185,6 +130,7 @@ Y = [
     Infl_se...
     Infl_es...
     Infl_pt...
+    Infl_dk...
     Ltir_us...
     Ltir_de...
     Ltir_uk...
@@ -192,8 +138,8 @@ Y = [
     Ltir_ca...
     Ltir_it...
     Ltir_jp...
-    Ltir_au...  % Added Australia
-    Ltir_be...  % Added Belgium
+    Ltir_au...  
+    Ltir_be...  
     Ltir_fi...
     Ltir_ie...
     Ltir_nl...
@@ -202,7 +148,11 @@ Y = [
     Ltir_se...
     Ltir_es...
     Ltir_pt...
+    Ltir_dk...
     ];
+
+
+
 
 Mnem = {
     'Stir_us'...
@@ -212,8 +162,8 @@ Mnem = {
     'Stir_ca'...
     'Stir_it'...
     'Stir_jp'...
-    'Stir_au'...  % Added Australia
-    'Stir_be'...  % Added Belgium
+    'Stir_au'...  
+    'Stir_be'... 
     'Stir_fi'...
     'Stir_ie'...
     'Stir_nl'...
@@ -222,6 +172,7 @@ Mnem = {
     'Stir_se'...
     'Stir_es'...
     'Stir_pt'...
+    'Stir_dk'...
     'Infl_us'...
     'Infl_de'...
     'Infl_uk'...
@@ -229,8 +180,8 @@ Mnem = {
     'Infl_ca'...
     'Infl_it'...
     'Infl_jp'...
-    'Infl_au'...  % Added Australia
-    'Infl_be'...  % Added Belgium
+    'Infl_au'... 
+    'Infl_be'...  
     'Infl_fi'...
     'Infl_ie'...
     'Infl_nl'...
@@ -239,6 +190,7 @@ Mnem = {
     'Infl_se'...
     'Infl_es'...
     'Infl_pt'...
+    'Infl_dk'...
     'Ltir_us'...
     'Ltir_de'...
     'Ltir_uk'...
@@ -246,8 +198,8 @@ Mnem = {
     'Ltir_ca'...
     'Ltir_it'...
     'Ltir_jp'...
-    'Ltir_au'...  % Added Australia
-    'Ltir_be'...  % Added Belgium
+    'Ltir_au'...  
+    'Ltir_be'...  
     'Ltir_fi'...
     'Ltir_ie'...
     'Ltir_nl'...
@@ -256,6 +208,7 @@ Mnem = {
     'Ltir_se'...
     'Ltir_es'...
     'Ltir_pt'...
+    'Ltir_dk'...
     };
 
 
@@ -271,36 +224,30 @@ disp(['Avg. and std in the presample: 1954-1959'])
 disp([(1:n)' nanmean(Y(T0pre:T1pre,:))' nanstd(Y(T0pre:T1pre,:))'])
 
 disp('mean Stir')
-disp(nanmean(nanmean(Y(T0pre:T1pre,1:17))))  % Updated to 17 countries
-%disp(nanmean(nanmean(Y(T0pre:T1pre,1:8))))
+disp(nanmean(nanmean(Y(T0pre:T1pre,1:Nc))))
 
 disp('mean Infl')
-disp(nanmean(nanmean(Y(T0pre:T1pre,18:34))))  % Updated to 17 countries
-%disp(nanmean(nanmean(Y(T0pre:T1pre,9:16))))
+disp(nanmean(nanmean(Y(T0pre:T1pre,Nc+1:Nc*2))))
 
 disp('mean Ltir')
-disp(nanmean(nanmean(Y(T0pre:T1pre,35:end))))  % Updated to 17 countries
-%disp(nanmean(nanmean(Y(T0pre:T1pre,17:end))))
+disp(nanmean(nanmean(Y(T0pre:T1pre,Nc*2+1:Nc*3))))
 
 
 disp('std Stir')
-disp(nanmean(nanstd(Y(T0pre:T1pre,1:17))))  % Updated to 17 countries
-%disp(nanmean(nanmean(Y(T0pre:T1pre,1:8))))
+disp(nanmean(nanstd(Y(T0pre:T1pre,1:Nc))))
 
 disp('std Infl')
-disp(nanmean(nanstd(Y(T0pre:T1pre,18:34))))  % Updated to 17 countries
-%disp(nanmean(nanmean(Y(T0pre:T1pre,9:16))))
+disp(nanmean(nanstd(Y(T0pre:T1pre,Nc+1:Nc*2))))
 
 disp('std Ltir')
-disp(nanmean(nanstd(Y(T0pre:T1pre,35:end))))  % Updated to 17 countries
-%disp(nanmean(nanmean(Y(T0pre:T1pre,17:end))))
+disp(nanmean(nanstd(Y(T0pre:T1pre,Nc*2+1:Nc*3))))
 
 
 
 %% Setup model, initial conditions
 
 T0 = find(Year==1870);
-T1 = find(Year==2024);
+T1 = find(Year==2025);
 
 
 Y = Y(T0:T1,:);
@@ -325,7 +272,8 @@ Ctr =[
     1       1      0%     Stir_ch... % Added Switzerland
     1       1      0%     Stir_se... % Added Sweden
     1       1      0%     Stir_es... % Added Spain
-    1       1      0%     Stir_pt... % Added Portugal
+    1       1      0%     Stir_pt... % Added Portuga
+    1       1      0%     Stir_dk... % Added Denmark
     0       1      0%     Infl_us...
     0       1      0%     Infl_de...
     0       1      0%     Infl_uk...
@@ -343,6 +291,7 @@ Ctr =[
     0       1      0%     Infl_se...  % Added Sweden
     0       1      0%     Infl_es...  % Added Spain
     0       1      0%     Infl_pt...  % Added Portugal
+    0       1      0%     Infl_dk...  % Added Denmark
     1       1      1%     Ltir_us...
     1       1      1%     Ltir_de...
     1       1      1%     Ltir_uk...
@@ -360,32 +309,31 @@ Ctr =[
     1       1      1%     Ltir_se...  % Added Sweden
     1       1      1%     Ltir_es...  % Added Spain
     1       1      1%     Ltir_pt...  % Added Portugal
+    1       1      1%     Ltir_dk...  % Added Denmark
     ];
 
-
 %Adding country specific trends to real rates
-% Cadd1                   =    zeros(n,7);
-% Cadd1(1:7,1:7)          =    eye(7);
-% Cadd1(15:21,1:7)        =    eye(7);
-Cadd1                   =    zeros(n,17);  % Updated to 17 countries
-Cadd1(1:17,1:17)          =    eye(17);     % Updated to 17 countries
-Cadd1(35:51,1:17)        =    eye(17);     % Updated to 17 countries
+Cadd1                   =    zeros(n,Nc);  % Updated to 18 countries
+Cadd1(1:Nc,1:Nc)          =    eye(Nc);     % Updated to 18 countries
+Cadd1(2*Nc+1:3*Nc,1:Nc)        =    eye(Nc);     % Updated to 18 countries
+
 
 %Adding the country specific trends in inflation rates
-% Cadd2              =    zeros(n,7);
-% Cadd2(1:7,1:7)     =    eye(7);
-% Cadd2(8:14,1:7)    =    eye(7);
-% Cadd2(15:21,1:7)   =    eye(7);
-Cadd2              =    zeros(n,17);      % Updated to 17 countries
-Cadd2(1:17,1:17)     =    eye(17);          % Updated to 17 countries
-Cadd2(18:34,1:17)   =    eye(17);          % Updated to 17 countries
-Cadd2(35:51,1:17)   =    eye(17);          % Updated to 17 countries
+Cadd2              =    zeros(n,18);      % Updated to 18 countries
+Cadd2(1:18,1:18)     =    eye(18);          % Updated to 18 countries
+Cadd2(19:36,1:18)   =    eye(18);          % Updated to 18 countries
+Cadd2(37:54,1:18)   =    eye(18);          % Updated to 18 countries
+% Cadd2              =    zeros(n,8);      % Original7 + Australia
+% Cadd2(1:8,1:8)     =    eye(8);          % Original 7 + Australia
+% Cadd2(9:16,1:8)   =    eye(8);          % Original 7 + Australia
+% Cadd2(17:24,1:8)   =    eye(8);          % Original 7 + Australia
 
-%Adding coutry specific trends to term spread
-% Cadd3                 =    zeros(n,7);
-% Cadd3(15:21,1:7)      =    eye(7);
-Cadd3                 =    zeros(n,17);   % Updated to 17 countries
-Cadd3(35:51,1:17)      =    eye(17);       % Updated to 17 countries
+
+%Adding country specific trends to term spread
+Cadd3                 =    zeros(n,18);   % Updated to 18 countries
+Cadd3(37:54,1:18)      =    eye(18);       % Updated to 18 countries
+% Cadd3                 =    zeros(n,8);   % Original 7 + Australia
+% Cadd3(17:24,1:8)      =    eye(8);       % Original 7 + Australia
 
 
 Ctr           = [Ctr Cadd1 Cadd2 Cadd3];
@@ -401,13 +349,20 @@ b0(1:n,1:n) = eye(n)*0;
 
 df0tr = 100;  % Degrees of freedom
 
-%            rs_wrd  pi_wrd        ts_wrd   rs_idio       pi_idio            ts_idio
-SC0tr =    ([   1      sqrt(2)       1     1*ones(1,17)    sqrt(2)*ones(1,17)  1*ones(1,17)   ]).^2/1;  % Initial conditions Q
-S0tr  =     [   .5     2             1      zeros(1,17)    zeros(1,17)         zeros(1,17)    ]';  % Initial conditions states
-P0tr = diag([   1      2             1     1*ones(1,17)/2  2*ones(1,17)/2      1*ones(1,17)/2 ].^2);
+%               rs_wrd  pi_wrd        ts_wrd   rs_idio        pi_idio            ts_idio
+SC0tr =    ([   1       sqrt(2)       1        1*ones(1,18)    sqrt(2)*ones(1,18)  1*ones(1,18)   ]).^2/1;  % Initial conditions Q - var01 DISPERSE prior (divisor 1 vs baseline 100)
+S0tr  =     [   .5      2             1        zeros(1,18)     zeros(1,18)         zeros(1,18)    ]';  % Initial conditions states - Updated to 18 countries
+P0tr = diag([   1       2             1        1*ones(1,18)/2  2*ones(1,18)/2      1*ones(1,18)/2 ].^2);  % Updated to 18 countries
+
+% SC0tr =    ([   1       sqrt(2)       1        1*ones(1,8)    sqrt(2)*ones(1,8)  1*ones(1,8)   ]).^2/100;  % Initial conditions Q - Original 7 + Australia
+% S0tr  =     [   .5      2             1        zeros(1,8)     zeros(1,8)         zeros(1,8)    ]';  % Initial conditions states - Original 7 + Australia
+% P0tr = diag([   1       2             1        1*ones(1,8)/2  2*ones(1,8)/2      1*ones(1,8)/2 ].^2);  % Original 7 + Australia
+
 
 %                  stir          infl        ltir
-Psi =       (2*[  ones(1,17)   2*ones(1,17)  ones(1,17) ]).^2;
+Psi =       (2*[  ones(1,18)   2*ones(1,18)  ones(1,18) ]).^2;  % Updated to 18 countries
+% Psi =       (2*[  ones(1,8)   2*ones(1,8)  ones(1,8) ]).^2;  % Original 7 + Australia
+
 
 S0cyc = zeros(n*p,1);  % Initialize cyclic component
 
@@ -456,7 +411,6 @@ P0(r+1:end,r+1:end) = P0cyc;
 tic
 
 % Store MCMC
-P_acc  = ones(1,Ndraws)*NaN;
 States = ones(T,r+n*p,Ndraws)*NaN;
 Trends = ones(T,n,Ndraws)*NaN;
 LogLik = ones(1,Ndraws)*NaN;
@@ -474,12 +428,13 @@ P_acc     = ones(1,Ndraws)*NaN;
 
 % Set prior to paper's lambda (coefficient to inf_wrld)
 mean_theta = 1;
-std_theta = .5; %25;%35;
+std_theta = .5; 
 
-C(1:51,2)        = mean_theta;  % Updated to 51 variables (17 countries * 3 variables)
-C([1:17 35:51],1) = mean_theta;  % Updated to 17 countries
-% C(1:21,2)        = mean_theta;
-% C([1:7 15:21],1) = mean_theta;
+
+C(1:54,2)        = mean_theta;  % Updated to 54 variables (18 countries * 3 variables)
+C([1:18 36:54],1) = mean_theta;  % Updated to 18 countries
+% C(1:24,2)        = mean_theta;  % Updated to 24 variables (8 countries * 3 variables)
+% C([1:8 17:24],1) = mean_theta;  % Original 7 + Australia
 
 
 lambda       = .2;  % Minnesota prior
@@ -498,21 +453,20 @@ for jm = 1:Ndraws  % MCMC draws
     
     
     theta_old = [];
-    %theta_old = [theta_old; C(1:7,2)] ;
-    theta_old = [theta_old;C(1:17, 2)];
+    theta_old = [theta_old; C(1:18,2)] ;  % Updated to 18 countries
+    % theta_old = [theta_old; C(1:8,2)] ;  % Original 7 + 1
     
-    theta_new = theta_old + randn(size(theta_old))*std_theta/5; 
     
-    % C_new          = C;
-    % C_new(1:7  ,2) = theta_new(1:7);       % Place new inflation coefficients
-    % C_new(8:14 ,2) = theta_new(1:7);
-    % C_new(15:21,2) = theta_new(1:7);
+    theta_new = theta_old + randn(size(theta_old))*std_theta/5;  
+    
     C_new          = C;
-    C_new(1:17  ,2) = theta_new(1:17);       % Place new inflation coefficients - Updated to 17 countries
-    C_new(18:34,2) = theta_new(1:17);       % Updated to 17 countries
-    C_new(35:51,2) = theta_new(1:17);       % Updated to 17 countries
-    
-    
+    C_new(1:18  ,2) = theta_new(1:18);       % Place new inflation coefficients - Updated to 18 countries
+    C_new(19:36,2) = theta_new(1:18);       % Updated to 18 countries
+    C_new(37:54,2) = theta_new(1:18);       % Updated to 18 countries
+    % C_new(1:8  ,2) = theta_new(1:8);       % Place new inflation coefficients - Original 7 + Australia
+    % C_new(9:16,2) = theta_new(1:8);       % Original 7 + Australia
+    % C_new(17:24,2) = theta_new(1:8);       % Original 7 + Australia
+
     kf_new     = KF(y, C_new, R, A, Q, S0, P0);  % Likelihood of new parameters
     loglik_new = kf_new.LogLik;
     
@@ -529,7 +483,7 @@ for jm = 1:Ndraws  % MCMC draws
     
     % ----------------------------- Block 2a ------------------------------
     
-    kc   = KC(kf);  % Smoother
+    kc   = KC(kf);                     % Smoother
     Ytr  = [kc.S0(1:r)'; kc.S(:,1:r)]; % Trend components 
     Ycyc = kc.S(:,r+1:r+n);            % Cyclical component
     
@@ -604,10 +558,10 @@ for jm = 1:Ndraws  % MCMC draws
                 disp([num2str(jm),'th draw of ',num2str(Ndraws),'; Elapsed time: ',num2str(toc),' seconds'])
                 disp(['Acceptance rate of the last 10k draws: ',num2str(mean(P_acc(jm-5000+1:jm)))])
                 disp(['Acceptance rate of the last 10k draws: ',num2str(mean(P_acc_var(jm-5000+1:jm)))])
-            end;
-        end;
+            end
+        end
         
-    end;
+    end
 end
 
 Ndraws = length(Lambda)-1;

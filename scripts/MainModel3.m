@@ -316,7 +316,7 @@ disp(nanmean(nanstd(Y(T0pre:T1pre,4*Nc+1))))
 %% Setup model, initial conditions
 
 T0 = find(Year==1870);
-T1 = find(Year==2024);
+T1 = find(Year==2025);
 
 
 Y = Y(T0:T1,:);
