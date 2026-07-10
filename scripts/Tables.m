@@ -59,7 +59,13 @@ fclose(fid);
 
 rows_m1 = [row_labels x];  % keep Model 1 rows for the combined table below
 
-clearvars -except rows_m1
+% End-of-sample LEVEL of global and US r-bar at year t_end2 (the value plotted
+% at the right edge of Figure 1), for the levels table below: median, 90%
+% interval [5,95] and {P(r-bar<0)}, same fmtCI format as the change tables.
+levels_m1 = [{'Global $\overline{r}^{w}_{t}$'; 'US $\overline{r}^{w}_{t}$'}, ...
+    {fmtCI(Rshort_bar(t_end2,:), Quant); fmtCI(Rshort_bar_us(t_end2,:), Quant)}];
+
+clearvars -except rows_m1 levels_m1
 
 %% Table: Global and US r* -- Model 2 (Convenience Yield), decomposed into r*, -cy, other
 
@@ -120,6 +126,10 @@ fid = fopen(['../tables/' model_name '.tex'], 'w');
 WriteTeXTable(fid, header, style, [row_labels x], [strrep(model_name, '_', ' ') '\\ \\']);
 fclose(fid);
 
+% End-of-sample LEVEL of global and US r-bar for Model 2 (same format as levels_m1).
+levels_m2 = [{'Global $\overline{r}^{w}_{t}$'; 'US $\overline{r}^{w}_{t}$'}, ...
+    {fmtCI(Rshort_bar(t_end2,:), Quant); fmtCI(Rshort_bar_us(t_end2,:), Quant)}];
+
 %% Table: Combined Model 1 + Model 2 (both panels in one table)
 % Panel labels span all 3 columns via WriteTeXTable's NaN multicolumn rule.
 
@@ -131,6 +141,20 @@ body = [{'\textbf{Model 1 (Baseline)}',          NaN, NaN}; ...
 fid = fopen('../tables/GlobalUS_Combined.tex', 'w');
 WriteTeXTable(fid, header, style, body, ...
     'Global and US $\overline{r}^{w}_{t}$: Models 1 and 2\\ \\');
+fclose(fid);
+
+%% Table: End-of-sample LEVELS of global and US r-bar (both models)
+% The value plotted at the last year of Figure 1 (Model 1) and its Model 2
+% counterpart -- median, 90% interval [5,95], {P(r-bar<0)}.
+yl = num2str(Year(t_end2));
+body_lvl = [{'\textbf{Model 1 (Baseline)}',          NaN}; ...
+            levels_m1; ...
+            {'\textbf{Model 2 (Convenience yield)}', NaN}; ...
+            levels_m2];
+
+fid = fopen('../tables/GlobalUS_Levels.tex', 'w');
+WriteTeXTable(fid, {'', yl}, 'l|c', body_lvl, ...
+    ['Global and US $\overline{r}^{w}_{t}$ level in ' yl '\\ \\']);
 fclose(fid);
 
 
