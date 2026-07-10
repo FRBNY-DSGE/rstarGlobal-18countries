@@ -126,21 +126,92 @@ fid = fopen(['../tables/' model_name '.tex'], 'w');
 WriteTeXTable(fid, header, style, [row_labels x], [strrep(model_name, '_', ' ') '\\ \\']);
 fclose(fid);
 
+rows_m2 = [row_labels x];  % keep Model 2 rows for the combined table below
+
 % End-of-sample LEVEL of global and US r-bar for Model 2 (same format as levels_m1).
 levels_m2 = [{'Global $\overline{r}^{w}_{t}$'; 'US $\overline{r}^{w}_{t}$'}, ...
     {fmtCI(Rshort_bar(t_end2,:), Quant); fmtCI(Rshort_bar_us(t_end2,:), Quant)}];
 
-%% Table: Combined Model 1 + Model 2 (both panels in one table)
+clearvars -except rows_m1 levels_m1 rows_m2 levels_m2
+
+%% Table: Global and US r* -- Model 3 (Consumption), decomposed into g, beta, -cy
+% World identity: r-bar = g-bar + beta-bar - cy-bar. The US rows reuse the world
+% g-bar and beta-bar with a US-specific cy-bar that absorbs the US idiosyncratic
+% real-rate trend, mirroring the Model 2 US construction above. Model 3's output
+% lives in results/ (not results/18) as OutputModel3_new.mat.
+
+model_name = 'GlobalUS_Model3';
+
+load('../results/OutputModel3_new.mat');
+
+Quant = [0.050 0.500 0.950];   % redefine after load (the .mat carries its own Quant)
+
+M = size(CommonTrends, 3);
+
+G_bar      = squeeze(CommonTrends(:, 1, :));
+Cy_bar     = squeeze(CommonTrends(:, 4, :));
+Beta_bar   = squeeze(CommonTrends(:, 5, :));
+Rshort_bar = G_bar + Beta_bar - Cy_bar;
+
+Rshort_bar_us_idio = squeeze(CommonTrends(:, 7, :));  % 6 world trends, so US rs_idio is col 7
+Rshort_bar_us      = repmat(transpose(squeeze(CC(1, 1, :))), T, 1) .* Rshort_bar + Rshort_bar_us_idio;
+Cy_bar_us          = Cy_bar - (Rshort_bar_us - Rshort_bar);
+
+t_start1 = find(Year == 1990);
+t_end1   = find(Year == 2019);
+t_start2 = find(Year == 2019);
+t_end2   = find(Year == 2025);
+
+x = {};
+
+y = {};
+y = [y; {fmtCI(Rshort_bar(t_end1,:)    - Rshort_bar(t_start1,:),    Quant)}];
+y = [y; {fmtCI(G_bar(t_end1,:)         - G_bar(t_start1,:),         Quant)}];
+y = [y; {fmtCI(Beta_bar(t_end1,:)      - Beta_bar(t_start1,:),      Quant)}];
+y = [y; {fmtCI(-(Cy_bar(t_end1,:)      - Cy_bar(t_start1,:)),       Quant)}];
+y = [y; {fmtCI(Rshort_bar_us(t_end1,:) - Rshort_bar_us(t_start1,:), Quant)}];
+y = [y; {fmtCI(G_bar(t_end1,:)         - G_bar(t_start1,:),         Quant)}];
+y = [y; {fmtCI(Beta_bar(t_end1,:)      - Beta_bar(t_start1,:),      Quant)}];
+y = [y; {fmtCI(-(Cy_bar_us(t_end1,:)   - Cy_bar_us(t_start1,:)),    Quant)}];
+x = [x y];
+
+y = {};
+y = [y; {fmtCI(Rshort_bar(t_end2,:)    - Rshort_bar(t_start2,:),    Quant)}];
+y = [y; {fmtCI(G_bar(t_end2,:)         - G_bar(t_start2,:),         Quant)}];
+y = [y; {fmtCI(Beta_bar(t_end2,:)      - Beta_bar(t_start2,:),      Quant)}];
+y = [y; {fmtCI(-(Cy_bar(t_end2,:)      - Cy_bar(t_start2,:)),       Quant)}];
+y = [y; {fmtCI(Rshort_bar_us(t_end2,:) - Rshort_bar_us(t_start2,:), Quant)}];
+y = [y; {fmtCI(G_bar(t_end2,:)         - G_bar(t_start2,:),         Quant)}];
+y = [y; {fmtCI(Beta_bar(t_end2,:)      - Beta_bar(t_start2,:),      Quant)}];
+y = [y; {fmtCI(-(Cy_bar_us(t_end2,:)   - Cy_bar_us(t_start2,:)),    Quant)}];
+x = [x y];
+
+row_labels = {'Global $\overline{r}^{w}_{t}$'; 'Global $\overline{g}^{w}_{t}$'; ...
+    'Global $\overline{\beta}^{w}_{t}$'; 'Global $-\overline{cy}^{w}_{t}$'; ...
+    'US $\overline{r}^{w}_{t}$'; 'US $\overline{g}^{w}_{t}$'; ...
+    'US $\overline{\beta}^{w}_{t}$'; 'US $-\overline{cy}^{w}_{t}$'};
+style      = 'l|c|c';
+header     = {'', '1990-2019', '2019-2025'};
+
+fid = fopen(['../tables/' model_name '.tex'], 'w');
+WriteTeXTable(fid, header, style, [row_labels x], [strrep(model_name, '_', ' ') '\\ \\']);
+fclose(fid);
+
+rows_m3 = [row_labels x];
+
+%% Table: Combined Model 1 + Model 2 + Model 3 (all panels in one table)
 % Panel labels span all 3 columns via WriteTeXTable's NaN multicolumn rule.
 
 body = [{'\textbf{Model 1 (Baseline)}',          NaN, NaN}; ...
         rows_m1; ...
         {'\textbf{Model 2 (Convenience yield)}', NaN, NaN}; ...
-        [row_labels x]];
+        rows_m2; ...
+        {'\textbf{Model 3 (Consumption)}',       NaN, NaN}; ...
+        rows_m3];
 
 fid = fopen('../tables/GlobalUS_Combined.tex', 'w');
 WriteTeXTable(fid, header, style, body, ...
-    'Global and US $\overline{r}^{w}_{t}$: Models 1 and 2\\ \\');
+    'Global and US $\overline{r}^{w}_{t}$: Models 1, 2 and 3\\ \\');
 fclose(fid);
 
 %% Table: End-of-sample LEVELS of global and US r-bar (both models)
