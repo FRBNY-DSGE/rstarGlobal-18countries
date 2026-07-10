@@ -42,16 +42,19 @@ including the `Data_MY`-ends-2016 / Figure 5 length fix).
 
 **Tables.** `Tables.m` (companion to `makeTables.m`) produces the Global-vs-US
 r\* summary tables — change in r-bar over 1990–2019 and 2019–2025 (median, 90%
-interval, P(change<0)), Model 2 decomposed into r\*/−cy/other — writing
-`tables/GlobalUS_{Model1,Model2,Combined}.tex` via driver `run_tables.m` (~80 GB,
-loads `results/18/OutputModel{1,2}.mat`). It was consolidated from an identical
-`Tables.m`/`Tables_Elena.m` pair and verified to reproduce the reference `.tex`
-byte-for-byte on the committed outputs. It also writes `tables/GlobalUS_Levels.tex`
-— the end-of-sample **level** of global/US r-bar (the value plotted at the right
-edge of Figure 1) for both models: median, 90% interval, {P(r-bar<0)}. For 2025:
-Model 1 global r-bar median **0.16**, US **0.38** (Model 2: 0.45 / 0.78). Its
-`find(Year==2025)` window anchors (two blocks) must be bumped on a new-year update.
-`makeTables.m` builds the appendix A1a/A1b decomposition tables and is unchanged.
+interval, P(change<0)) for all three models, each decomposed: Model 2 into
+r\*/−cy/other(m), Model 3 into r\*/g/β/−cy. It writes
+`tables/GlobalUS_{Model1,Model2,Model3,Combined}.tex` (Combined = all three
+panels) plus `tables/GlobalUS_Levels.tex` — the end-of-sample **level** of
+global/US r-bar (the value at the right edge of Figure 1) for Models 1 & 2:
+median, 90% interval, {P(r-bar<0)}. For 2025: Model 1 global r-bar median
+**0.16**, US **0.38** (Model 2: 0.45 / 0.78). Run via driver `run_tables.m`
+(~110 GB — loads `results/18/OutputModel{1,2}.mat` and the 37 GB
+`results/OutputModel3_new.mat`). It was consolidated from an identical
+`Tables.m`/`Tables_Elena.m` pair; every addition was verified to leave the other
+tables byte-for-byte unchanged. Its `find(Year==2025)` anchors (one per model)
+must be bumped on a new-year update. `makeTables.m` builds the appendix A1a/A1b
+decomposition tables and is unchanged.
 
 ## 3. Data-pull validation (this session's check)
 
@@ -119,6 +122,8 @@ Branch **`fix/18country-2025`** off `master` (master untouched, nothing pushed):
 - `71cacc8` — `Tables.m` (Global/US r\* tables) + `run_tables.m` + INSTRUCTIONS_UPDATED.md tables docs.
 - `ecb2138` — Project_Status.md: tables entry + refreshed git log.
 - `e5f05e4` — `Tables.m`: end-of-sample r-bar levels table (`GlobalUS_Levels.tex`).
+- `c6ab73e` — `Tables.m`: Model 3 (Consumption) Global/US table + folded into Combined.
+- (+ Project_Status.md / INSTRUCTIONS_UPDATED.md doc updates)
 
 Excluded from git throughout: `scripts/data/api_keys.py` (secrets), `results/`
 (20–38 GB `.mat`), SGE logs, and test scratch (`indata_check/`, `_cache/`).
