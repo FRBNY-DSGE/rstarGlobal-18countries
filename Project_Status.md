@@ -95,6 +95,27 @@ Estimation/figures (details in Fixes.md):
 7. Figure scripts: Model 3 `codes` 17→18 (mis-indexing), Model 1 `country_colors`
    18th row, Figure 2 var01 guard, Figure 5 MY-regression length fix.
 
+Consumption model (Model 3) — **observation-matrix bug** (found 2026-07-14 while
+investigating why Model 3's r-bar decomposition looked off vs Models 1 & 2):
+- In `MainModel3.m` the observation rows are `Stir, Infl, Ltir, Dcons, Baa`, so the
+  single `Baa_us` row is the **last** row = `4*Nc+1` (73 for Nc=18). The original
+  7-country code (FRBNY repo) correctly set the Baa idiosyncratic loadings there
+  (`Cadd2(29,1)=1; Cadd3(29,1)=1`, 29 = 4·7+1). The 18-country port instead wrote
+  **`3*Nc+1`** (=55 = `Dcons_us`), apparently copied from Model 2 (which has no
+  `Dcons` group, so its Baa sits at `3*Nc+1`). Effect: `Dcons_us` spuriously loaded
+  on the US idio inflation & term-spread trends, and `Baa_us` was missing those
+  loadings — corrupting the US Baa/consumption equations and, plausibly, inflating
+  Model 3's convenience-yield decline (−2.54 vs Model 2's −1.53).
+- Everything else (priors `SC0tr/S0tr/P0tr/Psi/df0tr`, world-trend `Ctr` loadings,
+  `Cadd4` consumption block) matches the original exactly. One non-bug prior
+  difference: Model 3's inflation trend prior is `2` (var 4) vs `√2` (var 2) in
+  Models 1 & 2 — but that value is inherited from the original consumption code.
+- **Fix:** `Cadd2/Cadd3(3*Nc+1,1)` → `(4*Nc+1,1)` (and the harmless `Cadd1` line).
+  Re-estimating Model 3 in two versions to compare: **A** = fix + original
+  inflation prior `2` (`MainModel3.m` → `OutputModel3_new.mat`, job 231667); **B**
+  = fix + Models-1&2 inflation prior `√2` (`MainModel3_B.m` → `OutputModel3_B.mat`,
+  job 231668). The pre-fix output is preserved as `results/OutputModel3_buggy.mat`.
+
 Data pipeline (details in PIPELINE_BUGS.md):
 - **BUG 1** — `master-pull.py` called a Windows-only asyncio policy unconditionally,
   killing the BoE/UK fetch on Linux. Fixed (guard by `sys.platform`).
@@ -123,6 +144,8 @@ Branch **`fix/18country-2025`** off `master` (master untouched, nothing pushed):
 - `ecb2138` — Project_Status.md: tables entry + refreshed git log.
 - `e5f05e4` — `Tables.m`: end-of-sample r-bar levels table (`GlobalUS_Levels.tex`).
 - `c6ab73e` — `Tables.m`: Model 3 (Consumption) Global/US table + folded into Combined.
+- `MainModel3.m` Cadd Baa-row bug fix (A) + `MainModel3_B.m` (aligned inflation prior)
+  + `run_model3_B.m`; re-estimating A (231667) and B (231668).
 - (+ Project_Status.md / INSTRUCTIONS_UPDATED.md doc updates)
 
 Excluded from git throughout: `scripts/data/api_keys.py` (secrets), `results/`

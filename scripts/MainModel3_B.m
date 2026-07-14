@@ -1,4 +1,7 @@
-%% MainModel3.m    Estimates the "Consumption Model" from Global Trends in
+%% MainModel3_B.m  Consumption Model, VERSION B: Cadd Baa-row bug fixed AND the
+%                  inflation trend prior aligned to Models 1 & 2 (sqrt(2), var 2)
+%                  instead of the original 2 (var 4). Saved as OutputModel3_B.mat.
+%% (adapted from) MainModel3.m  Estimates the "Consumption Model" from Global Trends in
 %                  Interest Rates. Results are saved as
 %                  "OutputModel3.mat."
 
@@ -6,7 +9,7 @@
 
 clear;
 
-filename = '../results/OutputModel3_new.mat';  % Output filename
+filename = '../results/OutputModel3_B.mat';  % Output filename
 
 addpath Routines
 
@@ -456,7 +459,7 @@ df0tr = 100;
 % SC0tr =    ([1/sqrt(4)   2       1    1/sqrt(2) 1/sqrt(4)     1     ones(1,7)  2*ones(1,7)   ones(1,7)   ones(1,7)  ]).^2/100;
 % S0tr =      [   1.5      2       1       1         0          0    zeros(1,7)   zeros(1,7)  zeros(1,7)  zeros(1,7)  ]';
 % P0tr = diag([   1        2       1       1         1          1   ones(1,7)/2  2*ones(1,7)/2 ones(1,7)/2 ones(1,7)/2  ].^2);
-SC0tr =    ([1/sqrt(4)   2       1    1/sqrt(2) 1/sqrt(4)     1     ones(1,Nc)  2*ones(1, Nc)   ones(1,Nc)   ones(1,Nc)  ]).^2/100;
+SC0tr =    ([1/sqrt(4)   sqrt(2) 1    1/sqrt(2) 1/sqrt(4)     1     ones(1,Nc)  sqrt(2)*ones(1, Nc)   ones(1,Nc)   ones(1,Nc)  ]).^2/100;  % VERSION B: inflation trend prior sqrt(2) (var 2), matching Models 1 & 2
 S0tr =      [   1.5      2       1       1         0          0    zeros(1,Nc)   zeros(1,Nc)  zeros(1,Nc)  zeros(1,Nc)  ]';
 P0tr = diag([   1        2       1       1         1          1   ones(1,Nc)/2  2*ones(1,Nc)/2 ones(1,Nc)/2 ones(1,Nc)/2  ].^2);
 
