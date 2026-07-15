@@ -119,8 +119,10 @@ investigating why Model 3's r-bar decomposition looked off vs Models 1 & 2):
   Model 2 — 1990–2019 US −cy went from −2.01 (buggy) to **−0.97** (A) / **−0.86**
   (B), vs Model 2's −0.80. A and B are nearly identical, i.e. the inflation-trend
   prior barely affects the r\* decomposition. Global r-bar decline stays steeper
-  than Models 1 & 2 (≈ −5.2 vs −3.3 / −3.6 over 1990–2019). Tables regenerated:
-  `tables/GlobalUS_Model3.tex` (= A) and new `GlobalUS_Model3_B.tex`.
+  than Models 1 & 2 (≈ −5.2 vs −3.3 / −3.6 over 1990–2019). Full results for both
+  variants: tables `tables/GlobalUS_Model3.tex` (= A) and `GlobalUS_Model3_B.tex`;
+  figures `figures/fig7a/b/c-Model3_*.pdf` (= A) and `figures/model3_B/fig7a/b/c…`
+  (= B, via `MainModel3_B_MakeFigures.m` / `make_figs_m3_B.m`).
 
 Data pipeline (details in PIPELINE_BUGS.md):
 - **BUG 1** — `master-pull.py` called a Windows-only asyncio policy unconditionally,
