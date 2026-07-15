@@ -111,10 +111,16 @@ investigating why Model 3's r-bar decomposition looked off vs Models 1 & 2):
   difference: Model 3's inflation trend prior is `2` (var 4) vs `√2` (var 2) in
   Models 1 & 2 — but that value is inherited from the original consumption code.
 - **Fix:** `Cadd2/Cadd3(3*Nc+1,1)` → `(4*Nc+1,1)` (and the harmless `Cadd1` line).
-  Re-estimating Model 3 in two versions to compare: **A** = fix + original
-  inflation prior `2` (`MainModel3.m` → `OutputModel3_new.mat`, job 231667); **B**
-  = fix + Models-1&2 inflation prior `√2` (`MainModel3_B.m` → `OutputModel3_B.mat`,
-  job 231668). The pre-fix output is preserved as `results/OutputModel3_buggy.mat`.
+  Re-estimated Model 3 in two versions: **A** = fix + original inflation prior `2`
+  (`MainModel3.m` → `OutputModel3_new.mat`); **B** = fix + Models-1&2 inflation
+  prior `√2` (`MainModel3_B.m` → `OutputModel3_B.mat`). Pre-fix output preserved as
+  `results/OutputModel3_buggy.mat`.
+- **Outcome (2026-07-15):** the fix pulled the **US −cy** decline into line with
+  Model 2 — 1990–2019 US −cy went from −2.01 (buggy) to **−0.97** (A) / **−0.86**
+  (B), vs Model 2's −0.80. A and B are nearly identical, i.e. the inflation-trend
+  prior barely affects the r\* decomposition. Global r-bar decline stays steeper
+  than Models 1 & 2 (≈ −5.2 vs −3.3 / −3.6 over 1990–2019). Tables regenerated:
+  `tables/GlobalUS_Model3.tex` (= A) and new `GlobalUS_Model3_B.tex`.
 
 Data pipeline (details in PIPELINE_BUGS.md):
 - **BUG 1** — `master-pull.py` called a Windows-only asyncio policy unconditionally,
@@ -144,8 +150,10 @@ Branch **`fix/18country-2025`** off `master` (master untouched, nothing pushed):
 - `ecb2138` — Project_Status.md: tables entry + refreshed git log.
 - `e5f05e4` — `Tables.m`: end-of-sample r-bar levels table (`GlobalUS_Levels.tex`).
 - `c6ab73e` — `Tables.m`: Model 3 (Consumption) Global/US table + folded into Combined.
-- `MainModel3.m` Cadd Baa-row bug fix (A) + `MainModel3_B.m` (aligned inflation prior)
-  + `run_model3_B.m`; re-estimating A (231667) and B (231668).
+- `ce71af0` — `MainModel3.m` Cadd Baa-row bug fix (A) + `MainModel3_B.m` (aligned
+  inflation prior) + `run_model3_B.m`.
+- `3654b96` — `Tables.m`: emit `GlobalUS_Model3_B.tex`; canonical Model 3 table now
+  reflects the corrected version A.
 - (+ Project_Status.md / INSTRUCTIONS_UPDATED.md doc updates)
 
 Excluded from git throughout: `scripts/data/api_keys.py` (secrets), `results/`
