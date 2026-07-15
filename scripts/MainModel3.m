@@ -1,6 +1,10 @@
 %% MainModel3.m    Estimates the "Consumption Model" from Global Trends in
-%                  Interest Rates. Results are saved as
-%                  "OutputModel3.mat."
+%                  Interest Rates -- DEFAULT specification. Baa-row observation bug
+%                  fixed; inflation-trend prior sqrt(2) (variance 1/50), which is
+%                  what the paper's text states (p.4) and what Models 1 & 2 use.
+%                  Results saved as OutputModel3_new.mat. The alternative that keeps
+%                  the original code's inflation prior 2 (variance 1/25, 2x the
+%                  paper) is MainModel3_A.m.
 
 %% Setup
 
@@ -456,7 +460,7 @@ df0tr = 100;
 % SC0tr =    ([1/sqrt(4)   2       1    1/sqrt(2) 1/sqrt(4)     1     ones(1,7)  2*ones(1,7)   ones(1,7)   ones(1,7)  ]).^2/100;
 % S0tr =      [   1.5      2       1       1         0          0    zeros(1,7)   zeros(1,7)  zeros(1,7)  zeros(1,7)  ]';
 % P0tr = diag([   1        2       1       1         1          1   ones(1,7)/2  2*ones(1,7)/2 ones(1,7)/2 ones(1,7)/2  ].^2);
-SC0tr =    ([1/sqrt(4)   2       1    1/sqrt(2) 1/sqrt(4)     1     ones(1,Nc)  2*ones(1, Nc)   ones(1,Nc)   ones(1,Nc)  ]).^2/100;
+SC0tr =    ([1/sqrt(4)   sqrt(2) 1    1/sqrt(2) 1/sqrt(4)     1     ones(1,Nc)  sqrt(2)*ones(1, Nc)   ones(1,Nc)   ones(1,Nc)  ]).^2/100;  % VERSION B: inflation trend prior sqrt(2) (var 2), matching Models 1 & 2
 S0tr =      [   1.5      2       1       1         0          0    zeros(1,Nc)   zeros(1,Nc)  zeros(1,Nc)  zeros(1,Nc)  ]';
 P0tr = diag([   1        2       1       1         1          1   ones(1,Nc)/2  2*ones(1,Nc)/2 ones(1,Nc)/2 ones(1,Nc)/2  ].^2);
 

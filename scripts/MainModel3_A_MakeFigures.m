@@ -6,9 +6,9 @@ clc;
 close all
 
 addpath('Routines')
-load('../results/OutputModel3_B.mat')
+load('../results/OutputModel3_A.mat')
 
-figpath = '../figures/model3_B/';
+figpath = '../figures/model3_A/';
 appenpath = [figpath 'appendix/'];
 
 set(0,'defaultAxesFontName', 'Times');

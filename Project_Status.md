@@ -113,16 +113,26 @@ investigating why Model 3's r-bar decomposition looked off vs Models 1 & 2):
 - **Fix:** `Cadd2/Cadd3(3*Nc+1,1)` → `(4*Nc+1,1)` (and the harmless `Cadd1` line).
   Re-estimated Model 3 in two versions: **A** = fix + original inflation prior `2`
   (`MainModel3.m` → `OutputModel3_new.mat`); **B** = fix + Models-1&2 inflation
-  prior `√2` (`MainModel3_B.m` → `OutputModel3_B.mat`). Pre-fix output preserved as
-  `results/OutputModel3_buggy.mat`.
+  prior `√2`. Pre-fix output preserved as `results/OutputModel3_buggy.mat`.
 - **Outcome (2026-07-15):** the fix pulled the **US −cy** decline into line with
   Model 2 — 1990–2019 US −cy went from −2.01 (buggy) to **−0.97** (A) / **−0.86**
   (B), vs Model 2's −0.80. A and B are nearly identical, i.e. the inflation-trend
   prior barely affects the r\* decomposition. Global r-bar decline stays steeper
-  than Models 1 & 2 (≈ −5.2 vs −3.3 / −3.6 over 1990–2019). Full results for both
-  variants: tables `tables/GlobalUS_Model3.tex` (= A) and `GlobalUS_Model3_B.tex`;
-  figures `figures/fig7a/b/c-Model3_*.pdf` (= A) and `figures/model3_B/fig7a/b/c…`
-  (= B, via `MainModel3_B_MakeFigures.m` / `make_figs_m3_B.m`).
+  than Models 1 & 2 (≈ −5.2 vs −3.3 / −3.6 over 1990–2019).
+- **Which inflation prior does the paper support?** The paper (JIE 2019, p.4)
+  states the prior for the trend innovations is **1/100 for the real trends** and
+  **1/50 for the inflation trend**. In the code `SC0tr = ([…]).^2/100`, so 1/50
+  needs the entry `√2` — i.e. Models 1 & 2's value and **version B**. Version A's
+  original entry `2` gives **1/25, twice** the paper's 1/50; the paper never
+  documents a different inflation prior for Model 3. So **B is the paper-consistent
+  spec; A merely reproduces the original Model 3 code.**
+- **Default swapped to B (2026-07-15):** `MainModel3.m` is now the **default** = B
+  (√2, → `OutputModel3_new.mat`); the original-prior variant is `MainModel3_A.m`
+  (2, → `OutputModel3_A.mat`). Main outputs carry B: `tables/GlobalUS_Model3.tex`
+  (=B), `figures/fig7a/b/c-Model3_*.pdf` (=B). The alternative A lives in
+  `tables/GlobalUS_Model3_A.tex` and `figures/model3_A/`. Drivers/figure scripts
+  renamed to the `_A` suffix (`run_model3_A.m`, `make_figs_m3_A.m`,
+  `MainModel3_A_MakeFigures.m`). `GlobalUS_Combined.tex` Model-3 panel = B.
 
 Data pipeline (details in PIPELINE_BUGS.md):
 - **BUG 1** — `master-pull.py` called a Windows-only asyncio policy unconditionally,
@@ -156,6 +166,12 @@ Branch **`fix/18country-2025`** off `master` (master untouched, nothing pushed):
   inflation prior) + `run_model3_B.m`.
 - `3654b96` — `Tables.m`: emit `GlobalUS_Model3_B.tex`; canonical Model 3 table now
   reflects the corrected version A.
+- Make **B the default** Model 3 (paper-consistent 1/50 inflation prior) and **A
+  the alternative**: swapped outputs (`OutputModel3_new.mat`=B, `_A.mat`=A), scripts
+  (`MainModel3.m`=B, `MainModel3_A.m`=A + `_A` figure script/drivers), tables
+  (`GlobalUS_Model3.tex`=B, `_A.tex`=A, Combined=B) and figures (`figures/`=B,
+  `figures/model3_A/`=A). Historical `_B` names above refer to what those earlier
+  commits created.
 - (+ Project_Status.md / INSTRUCTIONS_UPDATED.md doc updates)
 
 Excluded from git throughout: `scripts/data/api_keys.py` (secrets), `results/`

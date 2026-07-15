@@ -1,8 +1,8 @@
 cd /data/dsge_data_dir/mdn/rstarGlobal-18countries/scripts
 try
-    MainModel3_B_MakeFigures
-    fprintf('FIGURES_DONE model 3 B\n');
+    MainModel3_A_MakeFigures
+    fprintf('FIGURES_DONE model 3 A\n');
 catch ME
-    fprintf(2, 'FIGURE SCRIPT ERROR (model 3 B): %s\n', getReport(ME));
+    fprintf(2, 'FIGURE SCRIPT ERROR (model 3 A): %s\n', getReport(ME));
 end
 exit

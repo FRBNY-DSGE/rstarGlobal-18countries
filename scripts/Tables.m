@@ -228,13 +228,14 @@ WriteTeXTable(fid, {'', yl}, 'l|c', body_lvl, ...
     ['Global and US $\overline{r}^{w}_{t}$ level in ' yl '\\ \\']);
 fclose(fid);
 
-%% Table: Global and US r* -- Model 3 VERSION B (Baa fix + inflation prior sqrt(2))
-% Same construction as the Model 3 block above but reading OutputModel3_B.mat
-% (the variant whose inflation trend prior is aligned to Models 1 & 2). Emitted
-% only if that estimate exists. Writes GlobalUS_Model3_B.tex (standalone).
-if exist('../results/OutputModel3_B.mat', 'file')
-    clear States Trends AA QQ RR CC CommonTrends   % free the Model 3 (A) arrays before loading B
-    load('../results/OutputModel3_B.mat');
+%% Table: Global and US r* -- Model 3 ALTERNATIVE version A (original inflation prior 2)
+% Same construction as the default Model 3 block above but reading
+% OutputModel3_A.mat (the alternative whose inflation trend prior keeps the
+% original code's value 2). Emitted only if that estimate exists. Writes
+% GlobalUS_Model3_A.tex (standalone).
+if exist('../results/OutputModel3_A.mat', 'file')
+    clear States Trends AA QQ RR CC CommonTrends   % free the default Model 3 (B) arrays before loading A
+    load('../results/OutputModel3_A.mat');
     Quant = [0.050 0.500 0.950];
     M = size(CommonTrends, 3);
     G_bar      = squeeze(CommonTrends(:, 1, :));
@@ -271,9 +272,9 @@ if exist('../results/OutputModel3_B.mat', 'file')
         'Global $\overline{\beta}^{w}_{t}$'; 'Global $-\overline{cy}^{w}_{t}$'; ...
         'US $\overline{r}^{w}_{t}$'; 'US $\overline{g}^{w}_{t}$'; ...
         'US $\overline{\beta}^{w}_{t}$'; 'US $-\overline{cy}^{w}_{t}$'};
-    fid = fopen('../tables/GlobalUS_Model3_B.tex', 'w');
+    fid = fopen('../tables/GlobalUS_Model3_A.tex', 'w');
     WriteTeXTable(fid, {'', '1990-2019', '2019-2025'}, 'l|c|c', [row_labels x], ...
-        'GlobalUS Model3 B (inflation prior aligned to Models 1 \& 2)\\ \\');
+        'GlobalUS Model3 A (alternative: original inflation prior 2)\\ \\');
     fclose(fid);
 end
 
