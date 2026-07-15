@@ -228,6 +228,55 @@ WriteTeXTable(fid, {'', yl}, 'l|c', body_lvl, ...
     ['Global and US $\overline{r}^{w}_{t}$ level in ' yl '\\ \\']);
 fclose(fid);
 
+%% Table: Global and US r* -- Model 3 VERSION B (Baa fix + inflation prior sqrt(2))
+% Same construction as the Model 3 block above but reading OutputModel3_B.mat
+% (the variant whose inflation trend prior is aligned to Models 1 & 2). Emitted
+% only if that estimate exists. Writes GlobalUS_Model3_B.tex (standalone).
+if exist('../results/OutputModel3_B.mat', 'file')
+    clear States Trends AA QQ RR CC CommonTrends   % free the Model 3 (A) arrays before loading B
+    load('../results/OutputModel3_B.mat');
+    Quant = [0.050 0.500 0.950];
+    M = size(CommonTrends, 3);
+    G_bar      = squeeze(CommonTrends(:, 1, :));
+    Cy_bar     = squeeze(CommonTrends(:, 4, :));
+    Beta_bar   = squeeze(CommonTrends(:, 5, :));
+    Rshort_bar = G_bar + Beta_bar - Cy_bar;
+    Rshort_bar_us_idio = squeeze(CommonTrends(:, 7, :));
+    Rshort_bar_us      = repmat(transpose(squeeze(CC(1, 1, :))), T, 1) .* Rshort_bar + Rshort_bar_us_idio;
+    Cy_bar_us          = Cy_bar - (Rshort_bar_us - Rshort_bar);
+    t_start1 = find(Year == 1990); t_end1 = find(Year == 2019);
+    t_start2 = find(Year == 2019); t_end2 = find(Year == 2025);
+    x = {};
+    y = {};
+    y = [y; {fmtCI(Rshort_bar(t_end1,:)    - Rshort_bar(t_start1,:),    Quant)}];
+    y = [y; {fmtCI(G_bar(t_end1,:)         - G_bar(t_start1,:),         Quant)}];
+    y = [y; {fmtCI(Beta_bar(t_end1,:)      - Beta_bar(t_start1,:),      Quant)}];
+    y = [y; {fmtCI(-(Cy_bar(t_end1,:)      - Cy_bar(t_start1,:)),       Quant)}];
+    y = [y; {fmtCI(Rshort_bar_us(t_end1,:) - Rshort_bar_us(t_start1,:), Quant)}];
+    y = [y; {fmtCI(G_bar(t_end1,:)         - G_bar(t_start1,:),         Quant)}];
+    y = [y; {fmtCI(Beta_bar(t_end1,:)      - Beta_bar(t_start1,:),      Quant)}];
+    y = [y; {fmtCI(-(Cy_bar_us(t_end1,:)   - Cy_bar_us(t_start1,:)),    Quant)}];
+    x = [x y];
+    y = {};
+    y = [y; {fmtCI(Rshort_bar(t_end2,:)    - Rshort_bar(t_start2,:),    Quant)}];
+    y = [y; {fmtCI(G_bar(t_end2,:)         - G_bar(t_start2,:),         Quant)}];
+    y = [y; {fmtCI(Beta_bar(t_end2,:)      - Beta_bar(t_start2,:),      Quant)}];
+    y = [y; {fmtCI(-(Cy_bar(t_end2,:)      - Cy_bar(t_start2,:)),       Quant)}];
+    y = [y; {fmtCI(Rshort_bar_us(t_end2,:) - Rshort_bar_us(t_start2,:), Quant)}];
+    y = [y; {fmtCI(G_bar(t_end2,:)         - G_bar(t_start2,:),         Quant)}];
+    y = [y; {fmtCI(Beta_bar(t_end2,:)      - Beta_bar(t_start2,:),      Quant)}];
+    y = [y; {fmtCI(-(Cy_bar_us(t_end2,:)   - Cy_bar_us(t_start2,:)),    Quant)}];
+    x = [x y];
+    row_labels = {'Global $\overline{r}^{w}_{t}$'; 'Global $\overline{g}^{w}_{t}$'; ...
+        'Global $\overline{\beta}^{w}_{t}$'; 'Global $-\overline{cy}^{w}_{t}$'; ...
+        'US $\overline{r}^{w}_{t}$'; 'US $\overline{g}^{w}_{t}$'; ...
+        'US $\overline{\beta}^{w}_{t}$'; 'US $-\overline{cy}^{w}_{t}$'};
+    fid = fopen('../tables/GlobalUS_Model3_B.tex', 'w');
+    WriteTeXTable(fid, {'', '1990-2019', '2019-2025'}, 'l|c|c', [row_labels x], ...
+        'GlobalUS Model3 B (inflation prior aligned to Models 1 \& 2)\\ \\');
+    fclose(fid);
+end
+
 
 function s = fmtCI(x, Quant)
 % fmtCI  Format a draw vector as a \makecell with the posterior median,
