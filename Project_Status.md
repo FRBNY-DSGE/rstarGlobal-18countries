@@ -95,44 +95,41 @@ Estimation/figures (details in Fixes.md):
 7. Figure scripts: Model 3 `codes` 17→18 (mis-indexing), Model 1 `country_colors`
    18th row, Figure 2 var01 guard, Figure 5 MY-regression length fix.
 
-Consumption model (Model 3) — **observation-matrix bug** (found 2026-07-14 while
-investigating why Model 3's r-bar decomposition looked off vs Models 1 & 2):
-- In `MainModel3.m` the observation rows are `Stir, Infl, Ltir, Dcons, Baa`, so the
-  single `Baa_us` row is the **last** row = `4*Nc+1` (73 for Nc=18). The original
-  7-country code (FRBNY repo) correctly set the Baa idiosyncratic loadings there
-  (`Cadd2(29,1)=1; Cadd3(29,1)=1`, 29 = 4·7+1). The 18-country port instead wrote
-  **`3*Nc+1`** (=55 = `Dcons_us`), apparently copied from Model 2 (which has no
-  `Dcons` group, so its Baa sits at `3*Nc+1`). Effect: `Dcons_us` spuriously loaded
-  on the US idio inflation & term-spread trends, and `Baa_us` was missing those
-  loadings — corrupting the US Baa/consumption equations and, plausibly, inflating
-  Model 3's convenience-yield decline (−2.54 vs Model 2's −1.53).
-- Everything else (priors `SC0tr/S0tr/P0tr/Psi/df0tr`, world-trend `Ctr` loadings,
-  `Cadd4` consumption block) matches the original exactly. One non-bug prior
-  difference: Model 3's inflation trend prior is `2` (var 4) vs `√2` (var 2) in
-  Models 1 & 2 — but that value is inherited from the original consumption code.
-- **Fix:** `Cadd2/Cadd3(3*Nc+1,1)` → `(4*Nc+1,1)` (and the harmless `Cadd1` line).
-  Re-estimated Model 3 in two versions: **A** = fix + original inflation prior `2`
-  (`MainModel3.m` → `OutputModel3_new.mat`); **B** = fix + Models-1&2 inflation
-  prior `√2`. Pre-fix output preserved as `results/OutputModel3_buggy.mat`.
-- **Outcome (2026-07-15):** the fix pulled the **US −cy** decline into line with
-  Model 2 — 1990–2019 US −cy went from −2.01 (buggy) to **−0.97** (A) / **−0.86**
-  (B), vs Model 2's −0.80. A and B are nearly identical, i.e. the inflation-trend
-  prior barely affects the r\* decomposition. Global r-bar decline stays steeper
-  than Models 1 & 2 (≈ −5.2 vs −3.3 / −3.6 over 1990–2019).
-- **Which inflation prior does the paper support?** The paper (JIE 2019, p.4)
-  states the prior for the trend innovations is **1/100 for the real trends** and
-  **1/50 for the inflation trend**. In the code `SC0tr = ([…]).^2/100`, so 1/50
-  needs the entry `√2` — i.e. Models 1 & 2's value and **version B**. Version A's
-  original entry `2` gives **1/25, twice** the paper's 1/50; the paper never
-  documents a different inflation prior for Model 3. So **B is the paper-consistent
-  spec; A merely reproduces the original Model 3 code.**
-- **Default swapped to B (2026-07-15):** `MainModel3.m` is now the **default** = B
-  (√2, → `OutputModel3_new.mat`); the original-prior variant is `MainModel3_A.m`
-  (2, → `OutputModel3_A.mat`). Main outputs carry B: `tables/GlobalUS_Model3.tex`
-  (=B), `figures/fig7a/b/c-Model3_*.pdf` (=B). The alternative A lives in
-  `tables/GlobalUS_Model3_A.tex` and `figures/model3_A/`. Drivers/figure scripts
-  renamed to the `_A` suffix (`run_model3_A.m`, `make_figs_m3_A.m`,
-  `MainModel3_A_MakeFigures.m`). `GlobalUS_Combined.tex` Model-3 panel = B.
+Consumption model (Model 3) — **two distinct issues** found 2026-07-14/15 while
+investigating why Model 3's r-bar decomposition looked off vs Models 1 & 2. Both are
+now fixed; the corrected model was re-estimated and made the default.
+
+**Issue 1 — observation-matrix bug (Baa row).** The observation rows are
+`Stir, Infl, Ltir, Dcons, Baa`, so the single `Baa_us` row is the **last** row =
+`4*Nc+1` (73 for Nc=18). The original 7-country FRBNY code set the Baa idiosyncratic
+loadings there (`Cadd2(29,1)=1; Cadd3(29,1)=1`, 29 = 4·7+1), but the 18-country port
+wrote **`3*Nc+1`** (=55 = `Dcons_us`) — apparently copied from Model 2, which has no
+`Dcons` group. Effect: `Dcons_us` spuriously loaded on the US idio inflation &
+term-spread trends and `Baa_us` was missing those loadings, corrupting the US
+Baa/consumption equations (and inflating the convenience-yield decline). **Fix:**
+`Cadd1/Cadd2/Cadd3(3*Nc+1,1)` → `(4*Nc+1,1)`. (Everything else — the priors,
+world-trend `Ctr` loadings, and `Cadd4` — matches the original 7-country code.)
+
+**Issue 2 — inflation-trend prior inconsistent with the paper.** The paper (JIE 2019,
+p.4) states the trend-innovation prior is **1/100 for the real trends** and **1/50 for
+the inflation trend**. In code `SC0tr = ([…]).^2/100`, so 1/50 requires the entry
+`√2` — which Models 1 & 2 use. Model 3's original code instead uses `2`, giving
+**1/25 = twice the paper's 1/50**; the paper never documents a different Model-3
+prior, so this is an undocumented discrepancy, not an intended model difference.
+
+**Re-estimation, comparison & default swap (2026-07-15).** Both issues addressed, then
+re-estimated in two variants (pre-fix output kept as `results/OutputModel3_buggy.mat`):
+- **B** = Baa fix **+ paper-consistent inflation prior `√2`** → now the **default**.
+- **A** = Baa fix **+ original inflation prior `2`** → the alternative.
+
+Outcome: the Baa fix pulled the **US −cy** decline into line with Model 2 (1990–2019:
+−2.01 buggy → **−0.86** B / **−0.97** A, vs Model 2's −0.80); the inflation prior
+(A vs B) barely moves the r\* decomposition. Global r-bar decline stays steeper than
+Models 1 & 2 (≈ −5.2 vs −3.3 / −3.6). File map — default **B**: `MainModel3.m`,
+`OutputModel3_new.mat`, `tables/GlobalUS_Model3.tex`, `figures/fig7a/b/c-Model3_*.pdf`,
+`GlobalUS_Combined.tex` panel. Alternative **A**: `MainModel3_A.m`,
+`OutputModel3_A.mat`, `tables/GlobalUS_Model3_A.tex`, `figures/model3_A/`,
+`run_model3_A.m`, `make_figs_m3_A.m`, `MainModel3_A_MakeFigures.m`.
 
 Data pipeline (details in PIPELINE_BUGS.md):
 - **BUG 1** — `master-pull.py` called a Windows-only asyncio policy unconditionally,
