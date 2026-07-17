@@ -115,12 +115,21 @@ hold on
 plot(Year, qRshort_bar_us(:, 3), ...
     'k:', 'LineWidth', 1.5);  % r-bar US
 
-axis([1880 2024 -3 6])
+axis([1880 Year(end) -3 6])
 xticks(1880:20:2020)
 % title('$\bar{r}^w_t$ and $\bar{r}_{US, t}$', 'Interpreter', 'latex')
 box on
 
 printpdf(gcf, [figpath 'fig1-Model1_Rshortbar-us.pdf'])
+
+% --- Public GitHub update/ artifacts: SAME figure handle -> PNG, plus CSVs. ---
+% Single source so the paper PDF and the repo PNG can never diverge again
+% (this is what replaced the old make_update.m). See Project_Status.md S8.
+saveas(gcf, '../update/qRshort_bar_us_global_m1.png');
+update_hdr = 'Year,r* 2.5 percentile,r* 16 percentile,r* median,r* 84 percentile,r* 97.5 percentile';
+write_update_csv('../update/qRshort_bar_global_m1.csv', update_hdr, Year, qRshort_bar);
+write_update_csv('../update/qRshort_bar_us_m1.csv',     update_hdr, Year, qRshort_bar_us);
+% ---------------------------------------------------------------------------
 
 
 %% Figure 2: Trends in Global Real Rates Under Alternative Priors for the 
@@ -267,6 +276,16 @@ box on
 printpdf(gcf, [figpath 'fig3b-Model1_Rshortbar-countries.pdf'])
 saveas(gcf, 'figure3.eps', 'epsc');
 
+% --- Public GitHub update/ artifact: SAME fig3b handle -> per-country PNG,
+% plus the 18-country r* CSV. Single source (replaced make_update.m). ---
+saveas(gcf, '../update/qRshort_bar_m1.png');
+Q18 = [];
+for kk = 1:numel(codes)
+    Q18 = [Q18, eval(sprintf('qRshort_bar_%s', codes{kk}))];
+end
+write_update_csv18('../update/qRshort_bar_m1.csv', codes, Year, Q18);
+% ---------------------------------------------------------------------------
+
 %% Compute table 1 main model values
 % 
 % Table1 = struct;
@@ -293,7 +312,7 @@ saveas(gcf, 'figure3.eps', 'epsc');
 % Define analysis periods
 periods = [
     1980, 2019;
-    2019, 2024
+    2019, 2025
 ];
 
 % Define the exact same variable as original code
@@ -852,3 +871,30 @@ axis([Year(1) Year(end) -3 6]);
 %title('Australia', 'Interpreter', 'latex')
 set(gca, 'FontSize', fSize)
 printpdf(gcf, [appenpath 'figa2-Model1_Rshort-countries_trend-idio_obs-average-au.pdf'])
+
+
+% ===== helpers: public update/ CSV writers (single source for repo results) =====
+% Emit the same CSVs the GitHub README links to. Moved here from the old
+% make_update.m so the figures and their data come from one script.
+function write_update_csv(f, hdr, Year, Q)
+    fid = fopen(f, 'w'); fprintf(fid, '%s\n', hdr);
+    for t = 1:numel(Year)
+        fprintf(fid, '%d', Year(t)); fprintf(fid, ',%.9g', Q(t,:)); fprintf(fid, '\n');
+    end
+    fclose(fid);
+end
+
+function write_update_csv18(f, codes, Year, Q)
+    Nc = numel(codes);
+    ql = {'r* 2.5 percentile','r* 16 percentile','r* median','r* 84 percentile','r* 97.5 percentile'};
+    fid = fopen(f, 'w');
+    fprintf(fid, 'Year');
+    for i = 1:Nc; for j = 1:5; fprintf(fid, ',%s', codes{i}); end; end
+    fprintf(fid, '\n');
+    for i = 1:Nc; for j = 1:5; fprintf(fid, ',%s', ql{j}); end; end
+    fprintf(fid, '\n');
+    for t = 1:numel(Year)
+        fprintf(fid, '%d', Year(t)); fprintf(fid, ',%.15g', Q(t,:)); fprintf(fid, '\n');
+    end
+    fclose(fid);
+end

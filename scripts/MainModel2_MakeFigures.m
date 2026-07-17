@@ -172,7 +172,7 @@ printpdf(gcf, [figpath 'fig6c-Model2_Rbar-Mbar-allcountries.pdf'])
 % Define analysis periods
 periods = [
     1980, 2019;
-    2019, 2024
+    2019, 2025
 ];
 
 % Define variables to analyze (matching the table structure)
@@ -447,7 +447,7 @@ p_ca = plot(Year, Infl_ca, 'r:', 'LineWidth', 1);
 p_it = plot(Year, Infl_it, 'g:', 'LineWidth', 1);
 p_jp = plot(Year, Infl_jp, 'm:', 'LineWidth', 1);
 
-xlim([1870 2017])
+xlim([Year(1) Year(end)])
 ylim([-3 15])
 yticks(0:5:15)
 

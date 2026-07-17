@@ -195,8 +195,16 @@ is `fig1-Model1_…`, "Baseline Model") and the Rachel discussion. The previousl
 published 18-country file `qRshort_bar_m2.*` was actually built from **Model 2**
 (its US 2024 ≈ 1.01 = Model 2 vs Model 1's ≈ 0.59); on 2026-07-17 it was corrected
 to Model 1 and **renamed** `qRshort_bar_m2` → `qRshort_bar_m1` (README links
-updated, old files removed). Regenerated for 2025 by **`scripts/make_update.m`**
-(driver `run_update.m`, ~40 GB) from `results/18/OutputModel1.mat`.
+updated, old files removed). **Emitted directly by
+`scripts/MainModel1_MakeFigures.m`** (via driver `make_figs_m1.m`): the same
+figure handles that print the paper PDFs `fig1-Model1_Rshortbar-us` and
+`fig3b-Model1_Rshortbar-countries` also `saveas` those two PNGs and write the
+three CSVs into `update/`. This single-source setup **replaced the standalone
+`make_update.m` / `run_update.m` (removed 2026-07-17)** so the paper PDF and the
+repo PNG can never diverge — that divergence is exactly what let a hard-coded
+`axis([1880 2024 …])` clip `fig1` at 2024 while the PNG (drawn by the other
+script, with `max(Year)`) correctly ran to 2025. The public per-country PNG now
+matches the paper's `fig3b` styling.
 
 **Slide-format tables.** The Rachel-discussion / BIS-slides tables are the
 `GlobalUS_*.tex` script output *mapped* via Table 1's footnote rule: each cell
@@ -217,9 +225,10 @@ its footnote says 95%. Consuming `.tex` needs `\usepackage{makecell}`.
 2. **Pull the code from `master`.** `git clone` / `git pull` this repo — the
    runnable pipeline (scripts, drivers, wired data) lives on `master`.
 3. **Run the scripts** (cluster, `matlab20a-batch-withemail`): estimate Models 1 & 2
-   via `run_model1.m` / `run_model2.m` (and 3 / var01 if wanted); then `run_update.m`
-   to regenerate the `update/` CSVs + PNGs, and `run_tables.m` for the `GlobalUS_*.tex`
-   (incl. slide-format) tables.
+   via `run_model1.m` / `run_model2.m` (and 3 / var01 if wanted); then the figure
+   jobs `make_figs_m1.m` / `make_figs_m2.m` / `make_figs_m3.m` — **`make_figs_m1.m`
+   now also regenerates the `update/` CSVs + PNGs** as a side effect (no separate
+   step) — and `run_tables.m` for the `GlobalUS_*.tex` (incl. slide-format) tables.
 4. **Upload to GitHub.** Commit and push BOTH the new code and the new results —
    the updated `update/` files (and README if names change) plus any script edits.
    Do NOT commit `results/*.mat` (huge) or `scripts/data/api_keys.py` (secret);
