@@ -185,6 +185,19 @@ Excluded from git throughout: `scripts/data/api_keys.py` (secrets), `results/`
 - 2026 data are not yet published; when they are, follow the 2025→2026 checklist
   in INSTRUCTIONS_FOR_AI.md §0 and DATA_UPDATED.md.
 
+### Immediate to-do (carry into next session)
+1. **Finalize `INSTRUCTIONS_FOR_AI.md`.** A checkpoint is committed (`75f93dd`)
+   with the agreed edits (INSTRUCTIONS_OLD rename, `update/` single-source note,
+   driver-table additions, slide/Model-3-A tables, prior + axis-clip lessons;
+   Requirements kept first). May still want more work on it.
+2. **Push `master` to GitHub.** 22 commits are committed locally but **unpushed** —
+   blocked on write access, *not* on any missing work. `MarcoDelNegro`'s SSH key
+   authenticates but lacks push rights to `FRBNY-DSGE/rstarGlobal-18countries`; the
+   stored HTTPS token (2019) did not push either. Fix: fresh classic PAT (`repo`
+   scope) from an account with write access, or have an admin grant write access,
+   then `git push origin master`. (`known_hosts` was refreshed with GitHub's
+   verified current host keys; remote is on HTTPS.)
+
 ## 8. Public `update/` results, slide tables & annual runbook
 
 The README displays results from `update/`: CSVs `qRshort_bar_global_m1.csv`,
