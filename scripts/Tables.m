@@ -59,13 +59,19 @@ fclose(fid);
 
 rows_m1 = [row_labels x];  % keep Model 1 rows for the combined table below
 
+% Raw change draw-vectors {complabel, dGlobal_p1, dGlobal_p2, dUS_p1, dUS_p2}
+% for the slide/star-format tables + replica generated at the end of the script.
+comp1 = { '$\overline{r}_t$', ...
+    Rshort_bar(t_end1,:)-Rshort_bar(t_start1,:), Rshort_bar(t_end2,:)-Rshort_bar(t_start2,:), ...
+    Rshort_bar_us(t_end1,:)-Rshort_bar_us(t_start1,:), Rshort_bar_us(t_end2,:)-Rshort_bar_us(t_start2,:) };
+
 % End-of-sample LEVEL of global and US r-bar at year t_end2 (the value plotted
 % at the right edge of Figure 1), for the levels table below: median, 90%
 % interval [5,95] and {P(r-bar<0)}, same fmtCI format as the change tables.
 levels_m1 = [{'Global $\overline{r}^{w}_{t}$'; 'US $\overline{r}^{w}_{t}$'}, ...
     {fmtCI(Rshort_bar(t_end2,:), Quant); fmtCI(Rshort_bar_us(t_end2,:), Quant)}];
 
-clearvars -except rows_m1 levels_m1
+clearvars -except rows_m1 levels_m1 comp1
 
 %% Table: Global and US r* -- Model 2 (Convenience Yield), decomposed into r*, -cy, other
 
@@ -128,11 +134,24 @@ fclose(fid);
 
 rows_m2 = [row_labels x];  % keep Model 2 rows for the combined table below
 
+% Raw change draw-vectors for the slide/star tables (US "other m" reuses the
+% global m-bar, mirroring the current-format table's US m row).
+comp2 = { ...
+    '$\overline{r}_t$', ...
+        Rshort_bar(t_end1,:)-Rshort_bar(t_start1,:), Rshort_bar(t_end2,:)-Rshort_bar(t_start2,:), ...
+        Rshort_bar_us(t_end1,:)-Rshort_bar_us(t_start1,:), Rshort_bar_us(t_end2,:)-Rshort_bar_us(t_start2,:); ...
+    '$-\overline{cy}_t$', ...
+        -(Cy_bar(t_end1,:)-Cy_bar(t_start1,:)), -(Cy_bar(t_end2,:)-Cy_bar(t_start2,:)), ...
+        -(Cy_bar_us(t_end1,:)-Cy_bar_us(t_start1,:)), -(Cy_bar_us(t_end2,:)-Cy_bar_us(t_start2,:)); ...
+    '$\overline{m}_t$', ...
+        M_bar(t_end1,:)-M_bar(t_start1,:), M_bar(t_end2,:)-M_bar(t_start2,:), ...
+        M_bar(t_end1,:)-M_bar(t_start1,:), M_bar(t_end2,:)-M_bar(t_start2,:) };
+
 % End-of-sample LEVEL of global and US r-bar for Model 2 (same format as levels_m1).
 levels_m2 = [{'Global $\overline{r}^{w}_{t}$'; 'US $\overline{r}^{w}_{t}$'}, ...
     {fmtCI(Rshort_bar(t_end2,:), Quant); fmtCI(Rshort_bar_us(t_end2,:), Quant)}];
 
-clearvars -except rows_m1 levels_m1 rows_m2 levels_m2
+clearvars -except rows_m1 levels_m1 rows_m2 levels_m2 comp1 comp2
 
 %% Table: Global and US r* -- Model 3 (Consumption), decomposed into g, beta, -cy
 % World identity: r-bar = g-bar + beta-bar - cy-bar. The US rows reuse the world
@@ -198,6 +217,22 @@ WriteTeXTable(fid, header, style, [row_labels x], [strrep(model_name, '_', ' ') 
 fclose(fid);
 
 rows_m3 = [row_labels x];
+
+% Raw change draw-vectors for the slide/star tables (US g and beta reuse the
+% global g-bar/beta-bar, mirroring the current-format table's US g/beta rows).
+comp3 = { ...
+    '$\overline{r}_t$', ...
+        Rshort_bar(t_end1,:)-Rshort_bar(t_start1,:), Rshort_bar(t_end2,:)-Rshort_bar(t_start2,:), ...
+        Rshort_bar_us(t_end1,:)-Rshort_bar_us(t_start1,:), Rshort_bar_us(t_end2,:)-Rshort_bar_us(t_start2,:); ...
+    '$\overline{g}_t$', ...
+        G_bar(t_end1,:)-G_bar(t_start1,:), G_bar(t_end2,:)-G_bar(t_start2,:), ...
+        G_bar(t_end1,:)-G_bar(t_start1,:), G_bar(t_end2,:)-G_bar(t_start2,:); ...
+    '$\overline{\beta}_t$', ...
+        Beta_bar(t_end1,:)-Beta_bar(t_start1,:), Beta_bar(t_end2,:)-Beta_bar(t_start2,:), ...
+        Beta_bar(t_end1,:)-Beta_bar(t_start1,:), Beta_bar(t_end2,:)-Beta_bar(t_start2,:); ...
+    '$-\overline{cy}_t$', ...
+        -(Cy_bar(t_end1,:)-Cy_bar(t_start1,:)), -(Cy_bar(t_end2,:)-Cy_bar(t_start2,:)), ...
+        -(Cy_bar_us(t_end1,:)-Cy_bar_us(t_start1,:)), -(Cy_bar_us(t_end2,:)-Cy_bar_us(t_start2,:)) };
 
 %% Table: Combined Model 1 + Model 2 + Model 3 (all panels in one table)
 % Panel labels span all 3 columns via WriteTeXTable's NaN multicolumn rule.
@@ -278,6 +313,30 @@ if exist('../results/OutputModel3_A.mat', 'file')
     fclose(fid);
 end
 
+%% Slide/star-format tables (both layouts, both intervals)
+% These MAP the current tables via Table 1's footnote rule in the Rachel
+% discussion: each cell becomes median^{stars} (interval), where the stars come
+% from the posterior probability the change is in the expected direction --
+% P(change<0) for 1990-2019, P(change>0) for 2019-2025 -- exceeding 0.90/0.95/
+% 0.975 (*/**/***). Two interval widths are emitted: 90% (5/95, matches the
+% deck) and 95% (2.5/97.5, matches the footnote text).
+%   Layout A: same rows/cols as the current tables, appended into each
+%             GlobalUS_Model{1,2,3}.tex.
+%   Layout B: exact deck replica (r^w and r^US column-groups, model panels) in
+%             GlobalUS_SlideReplica.tex.
+append_star_tables('../tables/GlobalUS_Model1.tex', 'GlobalUS Model1', comp1);
+append_star_tables('../tables/GlobalUS_Model2.tex', 'GlobalUS Model2', comp2);
+append_star_tables('../tables/GlobalUS_Model3.tex', 'GlobalUS Model3', comp3);
+
+fid = fopen('../tables/GlobalUS_SlideReplica.tex', 'w');
+for cc = {[0.050 0.500 0.950], '90'; [0.025 0.500 0.975], '95'}'
+    fprintf(fid, '\\begin{table}[htpb!]\n');
+    fprintf(fid, 'Global and US $\\overline{r}^{w}_{t}$ -- slide format, %s\\%% CI\\\\ \\\\\n\\centering\n', cc{2});
+    write_replica(fid, comp1, comp2, comp3, cc{1});
+    fprintf(fid, '\\end{table}\n\n');
+end
+fclose(fid);
+
 
 function s = fmtCI(x, Quant)
 % fmtCI  Format a draw vector as a \makecell with the posterior median,
@@ -291,4 +350,55 @@ z   = sort(x);
 z   = z(iQ);
 p   = sum(x < 0) / M;
 s = ['\makecell{' sprintf('$ %0.2f $ \\\\ $ [%0.2f, %0.2f] $ \\\\ $ \\{%0.3f\\} $', z(2), z(1), z(3), p) '}'];
+end
+
+function s = fmtStars(d, Quant, dir)
+% fmtStars  Slide-format cell: median^{stars} (lo,hi). Stars from the posterior
+% probability the change is in the expected direction exceeding 0.90/0.95/0.975
+% (*/**/***): dir='below' -> P(d<0) (1990-2019 decline); dir='above' -> P(d>0)
+% (2019-2025 rise). This is exactly the rule in Table 1's footnote (Rachel disc.).
+M  = numel(d);
+z  = sort(d); z = z(ceil(Quant * M));
+if strcmp(dir, 'below'); p = sum(d < 0) / M; else; p = sum(d > 0) / M; end
+st = ''; if p > 0.975; st = '***'; elseif p > 0.95; st = '**'; elseif p > 0.90; st = '*'; end
+s = ['\makecell{' sprintf('$ %0.2f^{%s} $ \\\\ $ (%0.2f, %0.2f) $', z(2), st, z(1), z(3)) '}'];
+end
+
+function append_star_tables(fname, disp_name, comp)
+% Append the slide-format table (Layout A: same rows/cols as the current table,
+% Global rows then US rows) to fname, at 90% and 95% CI.
+% comp: N x 5 cell {complabel, dGlobal_p1, dGlobal_p2, dUS_p1, dUS_p2}.
+header = {'', '1990-2019', '2019-2025'}; style = 'l|c|c';
+n = size(comp, 1);
+labels = [cellfun(@(c) ['Global ' c], comp(:,1), 'UniformOutput', false); ...
+          cellfun(@(c) ['US ' c],     comp(:,1), 'UniformOutput', false)];
+fid = fopen(fname, 'a');
+for cc = {[0.050 0.500 0.950], '90'; [0.025 0.500 0.975], '95'}'
+    Q = cc{1}; xs = cell(2*n, 2);
+    for i = 1:n
+        xs{i,1}   = fmtStars(comp{i,2}, Q, 'below'); xs{i,2}   = fmtStars(comp{i,3}, Q, 'above');
+        xs{n+i,1} = fmtStars(comp{i,4}, Q, 'below'); xs{n+i,2} = fmtStars(comp{i,5}, Q, 'above');
+    end
+    WriteTeXTable(fid, header, style, [labels xs], [disp_name ' (slide format, ' cc{2} '\% CI)\\ \\']);
+end
+fclose(fid);
+end
+
+function write_replica(fid, comp1, comp2, comp3, Q)
+% Deck-style replica (Layout B): r^w and r^US as column groups, model panels as
+% rows, slide-format star cells. Written directly (not via WriteTeXTable).
+fprintf(fid, '\\begin{tabular}{l cc cc}\n');
+fprintf(fid, ' & \\multicolumn{2}{c}{$\\overline{r}^{w}_{t}$} & \\multicolumn{2}{c}{$\\overline{r}^{US}_{t}$}\\\\\n');
+fprintf(fid, ' & 1990--2019 & 2019--2025 & 1990--2019 & 2019--2025\\\\\n\\hline\\hline\n');
+panels = {'Baseline Model', comp1; 'Convenience Yield Model', comp2; 'Consumption Model', comp3};
+for pp = 1:size(panels, 1)
+    fprintf(fid, '\\multicolumn{5}{@{}l}{\\textit{%s}}\\\\\n', panels{pp, 1});
+    comp = panels{pp, 2};
+    for i = 1:size(comp, 1)
+        fprintf(fid, '%s & %s & %s & %s & %s\\\\\n', comp{i, 1}, ...
+            fmtStars(comp{i, 2}, Q, 'below'), fmtStars(comp{i, 3}, Q, 'above'), ...
+            fmtStars(comp{i, 4}, Q, 'below'), fmtStars(comp{i, 5}, Q, 'above'));
+    end
+end
+fprintf(fid, '\\hline\n\\end{tabular}\n');
 end
