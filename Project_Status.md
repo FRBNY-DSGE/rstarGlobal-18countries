@@ -184,3 +184,43 @@ Excluded from git throughout: `scripts/data/api_keys.py` (secrets), `results/`
   left uncommitted (per prior scoping).
 - 2026 data are not yet published; when they are, follow the 2025→2026 checklist
   in INSTRUCTIONS_FOR_AI.md §0 and DATA_UPDATED.md.
+
+## 8. Public `update/` results, slide tables & annual runbook
+
+The README displays results from `update/`: CSVs `qRshort_bar_global_m1.csv`,
+`qRshort_bar_us_m1.csv`, `qRshort_bar_m1.csv` (18 country-specific) and PNGs
+`qRshort_bar_us_global_m1.png` + `qRshort_bar_m1.png`. **All are Model 1
+(Baseline)** — confirmed against the original 7-country repo (its `update/` figure
+is `fig1-Model1_…`, "Baseline Model") and the Rachel discussion. The previously
+published 18-country file `qRshort_bar_m2.*` was actually built from **Model 2**
+(its US 2024 ≈ 1.01 = Model 2 vs Model 1's ≈ 0.59); on 2026-07-17 it was corrected
+to Model 1 and **renamed** `qRshort_bar_m2` → `qRshort_bar_m1` (README links
+updated, old files removed). Regenerated for 2025 by **`scripts/make_update.m`**
+(driver `run_update.m`, ~40 GB) from `results/18/OutputModel1.mat`.
+
+**Slide-format tables.** The Rachel-discussion / BIS-slides tables are the
+`GlobalUS_*.tex` script output *mapped* via Table 1's footnote rule: each cell
+`median [lo,hi] {P}` → `median^{stars} (lo,hi)`, where stars mark P(change in the
+expected direction — <0 for 1990–2019, >0 for 2019–2025) > 0.90/0.95/0.975
+(*/**/***). `Tables.m` now emits these too: **Layout A** (same rows/cols, star
+cells) appended into each `GlobalUS_Model{1,2,3}.tex`, and **Layout B** (deck
+replica: r^w/r^US column-groups) in `GlobalUS_SlideReplica.tex` — each at **90% CI**
+(matches the deck) and **95% CI** (matches the footnote text). Verified to
+reproduce the deck's cells exactly. Note the deck carries the 90% interval though
+its footnote says 95%. Consuming `.tex` needs `\usepackage{makecell}`.
+
+### Annual update runbook (next year, e.g. 2025 → 2026)
+1. **Update the data.** Refresh to the new year and wire it into `indata/` — see
+   INSTRUCTIONS_FOR_AI.md §0 and `scripts/data/DATA_UPDATED.md`: bump `FETCH_END`,
+   run the pull, copy the vintage over the plain name, bump `T1` in each
+   `MainModel*.m`. Manual step: refresh `indata/raw/f1.1-data.csv` (Australia).
+2. **Pull the code from `master`.** `git clone` / `git pull` this repo — the
+   runnable pipeline (scripts, drivers, wired data) lives on `master`.
+3. **Run the scripts** (cluster, `matlab20a-batch-withemail`): estimate Models 1 & 2
+   via `run_model1.m` / `run_model2.m` (and 3 / var01 if wanted); then `run_update.m`
+   to regenerate the `update/` CSVs + PNGs, and `run_tables.m` for the `GlobalUS_*.tex`
+   (incl. slide-format) tables.
+4. **Upload to GitHub.** Commit and push BOTH the new code and the new results —
+   the updated `update/` files (and README if names change) plus any script edits.
+   Do NOT commit `results/*.mat` (huge) or `scripts/data/api_keys.py` (secret);
+   both are gitignored.

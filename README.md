@@ -4,14 +4,14 @@
 
 
 # Update
-The `update` folder contains CSV files ([US](https://github.com/FRBNY-DSGE/rstarGlobal-18countries/blob/master/update/qRshort_bar_us_m1.csv)/[Global](https://github.com/FRBNY-DSGE/rstarGlobal-18countries/blob/master/update/qRshort_bar_global_m1.csv) and [18 Country-specific](https://github.com/FRBNY-DSGE/rstarGlobal-18countries/blob/master/update/qRshort_bar_m2.csv)) of updated estimates of the trends in r* using data on short- and long-term yields, and inflation, computed using the rstarGlobal model. The [US/Global](https://github.com/FRBNY-DSGE/rstarGlobal-18countries/blob/master/update/qRshort_bar_us_global_m1.png) r* (figure above) and [18 Country-specific](https://github.com/FRBNY-DSGE/rstarGlobal-18countries/blob/master/update/qRshort_bar_m2.png) r* (figure below) figures show updated estimates of r*.
+The `update` folder contains CSV files ([US](https://github.com/FRBNY-DSGE/rstarGlobal-18countries/blob/master/update/qRshort_bar_us_m1.csv)/[Global](https://github.com/FRBNY-DSGE/rstarGlobal-18countries/blob/master/update/qRshort_bar_global_m1.csv) and [18 Country-specific](https://github.com/FRBNY-DSGE/rstarGlobal-18countries/blob/master/update/qRshort_bar_m1.csv)) of updated estimates of the trends in r* using data on short- and long-term yields, and inflation, computed using the rstarGlobal model. The [US/Global](https://github.com/FRBNY-DSGE/rstarGlobal-18countries/blob/master/update/qRshort_bar_us_global_m1.png) r* (figure above) and [18 Country-specific](https://github.com/FRBNY-DSGE/rstarGlobal-18countries/blob/master/update/qRshort_bar_m1.png) r* (figure below) figures show updated estimates of r*.
 
 **US/Global r\***  
 ![US/Global r*](https://github.com/FRBNY-DSGE/rstarGlobal-18countries/blob/master/update/qRshort_bar_us_global_m1.png)  
 Source: Author's calculations. The dashed black line shows the posterior median of global r* and the shaded areas show the 68 and 95 percent posterior coverage intervals. The dotted black line shows the posterior median of U.S. r*  
 
 **18 Country-specific r\***  
-![18 Country-specific r*](https://github.com/FRBNY-DSGE/rstarGlobal-18countries/blob/master/update/qRshort_bar_m2.png)  
+![18 Country-specific r*](https://github.com/FRBNY-DSGE/rstarGlobal-18countries/blob/master/update/qRshort_bar_m1.png)  
 Source: Author's calculations. The chart plots the posterior median estimates of r* for the 18 countries in the sample.
 
 
