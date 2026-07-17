@@ -3,7 +3,7 @@
 Snapshot of the work done to get the Global r\* (18-country) model estimating and
 plotting on data through **2025**, and to validate the data-pull pipeline.
 Companion docs: **[Fixes.md](Fixes.md)** (estimation/figure fixes),
-**[INSTRUCTIONS_UPDATED.md](INSTRUCTIONS_UPDATED.md)** (run guide, incl. 2025→2026),
+**[INSTRUCTIONS_FOR_AI.md](INSTRUCTIONS_FOR_AI.md)** (run guide, incl. 2025→2026),
 **[scripts/data/DATA_UPDATED.md](scripts/data/DATA_UPDATED.md)** (data pull),
 **[scripts/data/PIPELINE_BUGS.md](scripts/data/PIPELINE_BUGS.md)** (pull bugs).
 
@@ -142,7 +142,7 @@ Data pipeline (details in PIPELINE_BUGS.md):
 ## 5. Documentation produced
 
 - `Fixes.md` — estimation/figure changelog.
-- `INSTRUCTIONS_UPDATED.md` — run guide with a 2025→2026 checklist (original
+- `INSTRUCTIONS_FOR_AI.md` — run guide with a 2025→2026 checklist (original
   `INSTRUCTIONS.md` left untouched).
 - `scripts/data/DATA_UPDATED.md` — corrected data-pull guide (completeness check,
   Australia manual step, UK/Playwright reality, reproduce-a-vintage method).
@@ -152,10 +152,10 @@ Data pipeline (details in PIPELINE_BUGS.md):
 ## 6. Git
 
 Branch **`fix/18country-2025`** off `master` (master untouched, nothing pushed):
-- `4e47506` — fixed scripts + batch drivers + Fixes.md + INSTRUCTIONS_UPDATED.md + `.gitignore`.
+- `4e47506` — fixed scripts + batch drivers + Fixes.md + INSTRUCTIONS_FOR_AI.md + `.gitignore`.
 - `72c90e2` — 2025 workbook wired to plain name + `scripts/data/{DATA.md,INSTRUCTIONS.md}`.
 - `ed1780e` — `master-pull.py` pipeline fixes + DATA_UPDATED.md + PIPELINE_BUGS.md + Project_Status.md.
-- `71cacc8` — `Tables.m` (Global/US r\* tables) + `run_tables.m` + INSTRUCTIONS_UPDATED.md tables docs.
+- `71cacc8` — `Tables.m` (Global/US r\* tables) + `run_tables.m` + INSTRUCTIONS_FOR_AI.md tables docs.
 - `ecb2138` — Project_Status.md: tables entry + refreshed git log.
 - `e5f05e4` — `Tables.m`: end-of-sample r-bar levels table (`GlobalUS_Levels.tex`).
 - `c6ab73e` — `Tables.m`: Model 3 (Consumption) Global/US table + folded into Combined.
@@ -169,7 +169,7 @@ Branch **`fix/18country-2025`** off `master` (master untouched, nothing pushed):
   (`GlobalUS_Model3.tex`=B, `_A.tex`=A, Combined=B) and figures (`figures/`=B,
   `figures/model3_A/`=A). Historical `_B` names above refer to what those earlier
   commits created.
-- (+ Project_Status.md / INSTRUCTIONS_UPDATED.md doc updates)
+- (+ Project_Status.md / INSTRUCTIONS_FOR_AI.md doc updates)
 
 Excluded from git throughout: `scripts/data/api_keys.py` (secrets), `results/`
 (20–38 GB `.mat`), SGE logs, and test scratch (`indata_check/`, `_cache/`).
@@ -183,4 +183,4 @@ Excluded from git throughout: `scripts/data/api_keys.py` (secrets), `results/`
 - Regenerated **figure PDFs** and the root **`INSTRUCTIONS.md`** are intentionally
   left uncommitted (per prior scoping).
 - 2026 data are not yet published; when they are, follow the 2025→2026 checklist
-  in INSTRUCTIONS_UPDATED.md §0 and DATA_UPDATED.md.
+  in INSTRUCTIONS_FOR_AI.md §0 and DATA_UPDATED.md.

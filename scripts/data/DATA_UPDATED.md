@@ -4,7 +4,7 @@ Corrected/expanded version of `DATA.md`, reflecting what was learned validating
 the pull (reproducing the 2025 vintage from the 2024 workbook). Covers running
 the Python pull, getting its output into the MATLAB model's `indata/`, extending
 the sample by a year, and — importantly — **verifying a pull actually worked**.
-See `INSTRUCTIONS_UPDATED.md` (repo root) for the MATLAB side, and
+See `INSTRUCTIONS_FOR_AI.md` (repo root) for the MATLAB side, and
 **[PIPELINE_BUGS.md](PIPELINE_BUGS.md)** for known pipeline bugs.
 
 ## 1. What the master pull does
@@ -112,7 +112,7 @@ original pull. This is exactly how BUG 1 was found.
 The MATLAB scripts read fixed filenames with **no** year suffix. All three models
 plus `var01` read the **Cons** workbook `DataInflShortLongConsUpdated.xlsx` (74
 columns; Model 1 uses it too and ignores `rconpc_*` — see
-`INSTRUCTIONS_UPDATED.md`). After a pull, back up the current plain file and copy
+`INSTRUCTIONS_FOR_AI.md`). After a pull, back up the current plain file and copy
 the new vintage over it:
 ```bash
 cd indata
@@ -141,4 +141,4 @@ The true last complete year can still be earlier than `FETCH_END` if a series la
 `T1` in every `MainModel*.m` you run (read the current value out of the script;
 do not assume). The `_ReR/_1950/_df50/_var02..50/_unrestr` appendix specs are
 pinned to 2016 on purpose. Figure scripts have no end-year anchors except
-`Data_MY.xlsx`, which ends 2016 and is handled (see `INSTRUCTIONS_UPDATED.md` §5).
+`Data_MY.xlsx`, which ends 2016 and is handled (see `INSTRUCTIONS_FOR_AI.md` §5).
