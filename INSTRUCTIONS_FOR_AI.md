@@ -5,7 +5,8 @@ Estimate and plot **Model 1** (Baseline), **Model 2** (Convenience Yield), and
 prior, needed for Figure 2). All models are **18 countries** (the 17 in the
 published paper **plus Denmark**).
 
-> This supersedes the original `INSTRUCTIONS.md` for anyone re-running the model.
+> This supersedes the original `INSTRUCTIONS.md` (renamed **`INSTRUCTIONS_OLD.md`**)
+> for anyone re-running the model.
 > It reflects the fixes made during the 2025-vintage run; see **[Fixes.md](Fixes.md)**
 > for the full list of what was broken as-shipped and how it was repaired.
 
@@ -58,7 +59,8 @@ the two knobs below, so updating the sample is short. **Full checklist:**
    overlapping years and lets the fitted line stop at 2016 (see §5). Nothing to
    update unless you actually obtain newer MY data.
 
-5. **Estimate, then plot** — §3 and §4 below.
+5. **Estimate, then plot** — §3 and §4 below. The public `update/` figures + CSVs
+   regenerate automatically inside `make_figs_m1` (§4); no separate step.
 
 6. **If you make the tables, bump `Tables.m`'s year anchors.** `Tables.m` (§6)
    hard-codes the summary window as `find(Year==2019)`→`find(Year==2025)`; update
@@ -91,8 +93,10 @@ work, and `exit`s):
 | `run_model1.m`        | `MainModel1`        | `results/OutputModel1.mat`       | yes |
 | `run_model1_var01.m`  | `MainModel1_var01`  | `results/OutputModel1_var01.mat` | no (fig loads from `results/`) |
 | `run_model2.m`        | `MainModel2`        | `results/OutputModel2.mat`       | yes |
-| `run_model3.m`        | `MainModel3`        | `results/OutputModel3_new.mat`   | no |
-| `make_figs_m1/2/3.m`  | `MainModel*_MakeFigures` | PDFs in `figures/` (+ `appendix/`) | — |
+| `run_model3.m`        | `MainModel3` (version B, default)   | `results/OutputModel3_new.mat`   | no |
+| `run_model3_A.m`      | `MainModel3_A` (alt inflation prior)| `results/OutputModel3_A.mat`     | no |
+| `make_figs_m1/2/3.m`  | `MainModel*_MakeFigures` | PDFs in `figures/` (+ `appendix/`); **`make_figs_m1` also writes `update/` PNGs + CSVs** | — |
+| `run_tables.m`        | `Tables.m`          | `tables/GlobalUS_*.tex` (incl. slide-format) | — |
 
 Monitor with `qstat`; check peak memory / exit status afterward with
 `qacct -j <jobid>`.
@@ -163,7 +167,16 @@ for that marker to confirm a run was complete, not just finished.
 
 Figure memory ≈ the `.mat` size expanded in RAM: M1 ~80 GB, M2 ~64 GB, M3 ~110 GB.
 
-### 5. The `Data_MY.xlsx` / Figure 5 caveat
+> **`make_figs_m1` also writes the public `update/` artifacts.** The `fig1` and
+> `fig3b` blocks of `MainModel1_MakeFigures.m` additionally `saveas` the repo
+> PNGs (`qRshort_bar_us_global_m1.png`, `qRshort_bar_m1.png`) and write the three
+> `update/*.csv`, from the *same* figure handles/quantiles that make the paper
+> PDFs — one source for the paper figure and its GitHub copy. This replaced the
+> old standalone `make_update.m`/`run_update.m`; do not reintroduce a second
+> script for these figures (that duplication once let `fig1` clip at 2024 while
+> the PNG ran to 2025).
+
+## 5. The `Data_MY.xlsx` / Figure 5 caveat
 
 `Data_MY.xlsx` (Model 1 Figure 5's demographic regressor, G7 only) ends in **2016**.
 The estimation sample is longer, so `MainModel1_MakeFigures.m` runs the MY
@@ -186,6 +199,13 @@ Two table scripts, both writing LaTeX into `tables/`:
   - `tables/GlobalUS_Combined.tex` — all three model panels in one table
   - `tables/GlobalUS_Levels.tex` — end-of-sample **level** of global/US r-bar
     (Fig-1 value) for Models 1 & 2
+  - `tables/GlobalUS_Model3_A.tex` — the **alternative** Model 3 (version A, the
+    undocumented `2` inflation prior); the main `GlobalUS_Model3.tex` is version B
+  - **slide-format (star) tables** — Layout A (same rows/cols, cells
+    `median^{stars} (lo,hi)`) appended into each `GlobalUS_Model{1,2,3}.tex`, plus
+    Layout B (deck replica) in `GlobalUS_SlideReplica.tex`, at 90% & 95% CI. Stars
+    mark P(change in the expected direction) > .90/.95/.975; the consuming document
+    needs `\usepackage{makecell}`.
 
   It `load`s the full `results/18/OutputModel{1,2}.mat` **and**
   `results/OutputModel3_new.mat` (37 GB), so run it as a batch job with ~110 GB
@@ -212,6 +232,15 @@ Two table scripts, both writing LaTeX into `tables/`:
   divisor — nothing else. (Do **not** copy the old `MainModel1_var02…50.m` data
   loaders: they still use the obsolete 67-column layout; regenerate from
   `MainModel1.m` instead. See Fixes.md §5.)
+- **The Model 3 inflation-trend prior (A vs B).** `MainModel3.m` (default, version
+  **B**) sets the `SC0tr` inflation entry to `sqrt(2)` → prior 1/50, matching
+  Models 1 & 2 and the paper. `MainModel3_A.m` uses `2` → 1/25 (the original,
+  undocumented setting) and is the alternative, with its own `figures/model3_A/`
+  and `GlobalUS_Model3_A.tex`.
+- **Figure end-years must be `Year(end)`, never a literal.** A hard-coded
+  `axis([1880 2024 …])` in one block once clipped `fig1` a year behind every other
+  figure. If a single figure ends a year short of the rest, look for a literal
+  year in its `axis(...)`/`xlim(...)`.
 - **Adding / removing a country.** The country set is wired into several blocks that
   must all agree — get one wrong and you get a silent mis-index or a crash (this is
   exactly how Denmark ended up half-wired). For each model you must touch **all** of:
