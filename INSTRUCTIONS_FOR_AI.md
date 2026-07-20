@@ -146,7 +146,7 @@ extra observable and appends it to `Y`.
 
 ```bash
 cd scripts
-S=/data/dsge_data_dir/mdn/rstarGlobal-18countries/scripts
+S=/data/dsge_data_dir/rstarGlobal-18countries/scripts
 matlab20a-batch-withemail 130 $S/run_model1.m
 matlab20a-batch-withemail 130 $S/run_model1_var01.m
 matlab20a-batch-withemail 110 $S/run_model2.m
@@ -171,7 +171,7 @@ Run them **after** the corresponding estimates exist. To make the whole pipeline
 unattended, submit the figure jobs *held* on the estimation jobs so each releases
 automatically when its estimate finishes (SGE `-hold_jid`):
 ```bash
-S=/data/dsge_data_dir/mdn/rstarGlobal-18countries/scripts
+S=/data/dsge_data_dir/rstarGlobal-18countries/scripts
 ML="/apps/matlab20a/bin/matlab -singleCompThread -nodesktop -nodisplay -nosplash -r"
 qsub -m e -cwd -N make_figs_m2 -hold_jid <m2_jobid>              -l h_vmem=65G  -b y $ML "run $S/make_figs_m2.m"
 qsub -m e -cwd -N make_figs_m1 -hold_jid <m1_jobid>,<var01_jobid> -l h_vmem=81G -b y $ML "run $S/make_figs_m1.m"
@@ -231,7 +231,7 @@ Two table scripts, both writing LaTeX into `tables/`:
   `results/OutputModel3_new.mat` (37 GB), so run it as a batch job with ~110 GB
   via its driver:
   ```bash
-  S=/data/dsge_data_dir/mdn/rstarGlobal-18countries/scripts
+  S=/data/dsge_data_dir/rstarGlobal-18countries/scripts
   matlab20a-batch-withemail 110 $S/run_tables.m
   ```
   > It hard-codes the end year as `find(Year==2025)` (one block per model) — bump

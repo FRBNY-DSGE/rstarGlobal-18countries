@@ -1,4 +1,4 @@
-cd /data/dsge_data_dir/mdn/rstarGlobal-18countries/scripts
+cd /data/dsge_data_dir/rstarGlobal-18countries/scripts
 try
     MainModel3_MakeFigures
     fprintf('FIGURES_DONE model 3\n');
