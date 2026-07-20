@@ -82,6 +82,15 @@ The only differing columns:
 reconstructed exactly and 2021–2025 re-fetch correctly for every series except the
 UK long rate.
 
+**Re-run live with the user (2026-07-20), same result:** reproduced 2025 from the
+2024 workbook — ≤2020 block byte-identical, 2021–2025 differ only in the one
+`ltir_uk` 2025 cell (BoE headless). Also verified the FRED and BdF API keys with
+live calls (both valid). **Australia short rate is now auto-fetched** (RBA F1.1
+direct CSV, fallback to `indata/raw/f1.1-data.csv`) — commit `df5764f` — so the
+only remaining human inputs for a fresh run are the two long-lived API keys (see
+DATA_UPDATED.md §1a for how to obtain each). The BdF *developer portal* is flaky;
+get the key from `webstat.banque-france.fr/account` → "Clés d'API" tab.
+
 ## 4. Bugs found & fixed this session
 
 Estimation/figures (details in Fixes.md):
