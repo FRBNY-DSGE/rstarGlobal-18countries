@@ -31,6 +31,25 @@ the two knobs below, so updating the sample is short. **Full checklist:**
    > 2026, use `2025`; only bump to `2026` once 2026 is a finished year with
    > published annual data. Otherwise you pull a partial-year average.
 
+   > **⚠️ One series is NOT auto-fetched — the AI must ask the user to download it.**
+   > Everything else in the pull is fetched from source automatically, but the
+   > **Australia short rate (`stir_au`)** is read from a local file. If that file is
+   > stale the pull still *succeeds* and silently freezes Australia's short rate at
+   > an old year. So **before running the pull**, if you (the AI) cannot download it
+   > yourself, **stop and ask the user** to refresh it, spelling out:
+   > - **What to download:** the RBA statistical table **F1.1 – Interest Rates and
+   >   Yields – Money Market** (the CSV, monthly data).
+   > - **Where to get it:** <https://www.rba.gov.au/statistics/tables/> → the
+   >   *Interest Rates* group → **F1.1**, "Download this single table" (CSV).
+   > - **Where to put it:** overwrite `indata/raw/f1.1-data.csv`.
+   > - **What format:** the RBA CSV exactly as downloaded — an 11-row header block
+   >   (the loader uses `skiprows=11`) then monthly `DD/MM/YYYY,value,…` rows. The
+   >   loader reads the date column + the first rate column (Cash Rate Target) and
+   >   averages to annual. Do not reformat or re-order columns.
+   >
+   > See `scripts/data/DATA_UPDATED.md` §1b for the full detail. Do not pull
+   > silently with a stale Australia short rate.
+
    Output lands in the pull's aggregate folder as
    `DataInflShortLongConsUpdated_2026.xlsx` (and a `rconpc`-stripped sibling).
 
