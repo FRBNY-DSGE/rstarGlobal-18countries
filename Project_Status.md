@@ -186,10 +186,12 @@ Excluded from git throughout: `scripts/data/api_keys.py` (secrets), `results/`
   in INSTRUCTIONS_FOR_AI.md §0 and DATA_UPDATED.md.
 
 ### Immediate to-do (carry into next session)
-1. **Finalize `INSTRUCTIONS_FOR_AI.md`.** A checkpoint is committed (`75f93dd`)
-   with the agreed edits (INSTRUCTIONS_OLD rename, `update/` single-source note,
-   driver-table additions, slide/Model-3-A tables, prior + axis-clip lessons;
-   Requirements kept first). May still want more work on it.
+1. ~~**Finalize `INSTRUCTIONS_FOR_AI.md`.**~~ **DONE** (`75f93dd` + `e330a82`):
+   the agreed edits (INSTRUCTIONS_OLD rename, `update/` single-source note,
+   driver-table additions, slide/Model-3-A tables, prior + axis-clip lessons,
+   Requirements kept first) **plus** the §0.1 Australia manual-download step
+   (`stir_au` from RBA F1.1 → `indata/raw/f1.1-data.csv`; verified the sole
+   non-auto-fetched series). Can still be revised, but no known gaps remain.
 2. **Push `master` to GitHub.** 22 commits are committed locally but **unpushed** —
    blocked on write access, *not* on any missing work. `MarcoDelNegro`'s SSH key
    authenticates but lacks push rights to `FRBNY-DSGE/rstarGlobal-18countries`; the
