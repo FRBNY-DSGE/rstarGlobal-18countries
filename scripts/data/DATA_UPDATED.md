@@ -51,21 +51,42 @@ playwright install chromium
   > `AttributeError: ... 'WindowsProactorEventLoopPolicy'` in a thread traceback,
   > apply that guard.
 - `scripts/data/api_keys.py` — local, gitignored file defining `FRED_KEY` and
-  `BDF_KEY`. Recreate it on a fresh checkout before running.
+  `BDF_KEY`. Recreate it on a fresh checkout before running:
+  ```python
+  FRED_KEY = "your-fred-key"
+  BDF_KEY  = "your-banque-de-france-key"
+  ```
+  Both keys are **long-lived** (they don't expire like short-lived tokens), so this
+  is essentially a one-time setup you rarely revisit. Verify them with a quick live
+  call before a pull; only if one is rejected do you need a fresh one:
+  - **FRED_KEY** (US series): sign in at <https://fredaccount.stlouisfed.org/apikeys>
+    and copy the 32-character key (free account).
+  - **BDF_KEY** (French series): log in at **<https://webstat.banque-france.fr/account>**,
+    then open the **"Clés d'API"** tab to view/create your key. **Use this `/account`
+    page — not the `developer.webstat.banque-france.fr` portal**, which is often unreachable
+    ("secure connection failed" / TLS connection reset). The data API endpoint
+    (`webstat.banque-france.fr/api/...`) keeps working with an existing key even
+    when that portal is down, so a working key rarely needs re-issuing.
 
-### 1b. Australia short rate — MANUAL step
+### 1b. Australia short rate — auto-fetched (RBA F1.1), local file is a fallback
 
-`stir_au` is **not** fetched automatically — `sr_australia()` just reads
-`indata/raw/f1.1-data.csv`. If that file is stale, `stir_au` silently freezes at
-whatever year it contains while everything else refreshes. **Before a pull you
-intend to use**, download the latest RBA **Table F1.1 — Interest Rates and
-Yields, Money Market** CSV from <https://www.rba.gov.au/statistics/tables/> and
-save it over `indata/raw/f1.1-data.csv` (same format: header block skipped via
-`skiprows=11`, then `date,value` rows).
+`stir_au` is now fetched automatically: `sr_australia()` downloads the RBA **F1.1**
+money-market CSV directly from
+<https://www.rba.gov.au/statistics/tables/csv/f1.1-data.csv> and takes the annual
+mean of the monthly Cash Rate Target. No manual step in the normal case.
 
-> If you (Claude) are running this and cannot fetch that file yourself, tell the
-> user explicitly that `indata/raw/f1.1-data.csv` must be refreshed by hand from
-> that RBA link first — do not pull silently with a stale Australia short rate.
+**Fallback.** If the direct fetch fails (URL moved, site down — logged as
+`[warn ] RBA F1.1 direct fetch failed …`), `sr_australia()` falls back to the
+local file `indata/raw/f1.1-data.csv`. If that fallback is itself stale/missing,
+refresh it by hand: RBA statistical tables
+(<https://www.rba.gov.au/statistics/tables/>) → scroll to **"Interest Rates and
+Yields – Money Market – Monthly – F1.1"** → click the **"Data [CSV]"** button →
+save over `indata/raw/f1.1-data.csv` exactly as downloaded (11-row header skipped
+via `skiprows=11`, then monthly `DD/MM/YYYY,value,…` rows).
+
+> If you (Claude) hit the fallback and the local file is also stale, tell the user
+> explicitly to refresh `indata/raw/f1.1-data.csv` from that RBA link — do not pull
+> silently with a stale Australia short rate.
 
 ### 1c. Running it + the completeness check
 

@@ -54,6 +54,7 @@ SRC_XLSX = os.path.join(INDATA, "DataInflShortLongConsUpdated.xlsx")
 OUT_XLSX = os.path.join(INDATA, "DataInflShortLongConsUpdated_2025.xlsx")
 OUT_XLSX_NO_RCONPC = os.path.join(INDATA, "DataInflShortLongUpdated_2025.xlsx")
 RBA_CSV = os.path.join(INDATA, "raw", "f1.1-data.csv")
+RBA_URL = "https://www.rba.gov.au/statistics/tables/csv/f1.1-data.csv"  # F1.1 direct CSV
 
 ANCHOR = 2020          # last year taken from the existing workbook
 CPI_BASE_YEAR = 1990   # cpi source index with this year = 100
@@ -539,7 +540,15 @@ def sr_switzerland():
 
 
 def sr_australia():
-    raw = pd.read_csv(RBA_CSV, usecols=[0, 1], names=["date", "v"], skiprows=11)
+    # RBA F1.1 (money-market rates): fetch the CSV directly; fall back to the
+    # local file (indata/raw/f1.1-data.csv) only if the download fails, in which
+    # case that file must have been refreshed by hand (see DATA_UPDATED.md §1b).
+    try:
+        raw = pd.read_csv(io.BytesIO(_get(RBA_URL)), usecols=[0, 1],
+                          names=["date", "v"], skiprows=11)
+    except Exception as e:
+        print(f"  [warn ] RBA F1.1 direct fetch failed ({e!r}); using local {RBA_CSV}")
+        raw = pd.read_csv(RBA_CSV, usecols=[0, 1], names=["date", "v"], skiprows=11)
     months = pd.to_datetime(raw["date"], format="%d/%m/%Y", errors="coerce")
     return _annual_mean_from_monthly(months, raw["v"])
 
