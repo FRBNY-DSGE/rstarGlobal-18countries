@@ -201,13 +201,13 @@ Excluded from git throughout: `scripts/data/api_keys.py` (secrets), `results/`
    Requirements kept first) **plus** the §0.1 Australia manual-download step
    (`stir_au` from RBA F1.1 → `indata/raw/f1.1-data.csv`; verified the sole
    non-auto-fetched series). Can still be revised, but no known gaps remain.
-2. **Push `master` to GitHub.** 22 commits are committed locally but **unpushed** —
-   blocked on write access, *not* on any missing work. `MarcoDelNegro`'s SSH key
-   authenticates but lacks push rights to `FRBNY-DSGE/rstarGlobal-18countries`; the
-   stored HTTPS token (2019) did not push either. Fix: fresh classic PAT (`repo`
-   scope) from an account with write access, or have an admin grant write access,
-   then `git push origin master`. (`known_hosts` was refreshed with GitHub's
-   verified current host keys; remote is on HTTPS.)
+2. ~~**Push `master` to GitHub.**~~ **DONE 2026-07-20** — pushed to
+   `origin/master` at `3a60c94` (whole session public). It went via a **classic
+   PAT** (`repo` scope) the user ran with `git push` (GitHub rejects account
+   passwords; the env has no stored creds, so the user must run the push). Origin
+   had diverged by one collaborator commit (Elena Elbarmi's "Update MainModel2",
+   a Denmark add) — merged in, keeping our `MainModel2.m` (same Denmark rows plus
+   the closed `codes{}` brace + T1=2025, which supersedes it).
 
 ## 8. Public `update/` results, slide tables & annual runbook
 
