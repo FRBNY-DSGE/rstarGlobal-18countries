@@ -6,14 +6,13 @@ prior, needed for Figure 2). All models are **18 countries** (the 17 in the
 published paper **plus Denmark**).
 
 > This supersedes the original `INSTRUCTIONS.md` for anyone re-running the model.
-> It reflects the fixes made during the 2025-vintage run; see **[Fixes.md](Fixes.md)**
-> for the full list of what was broken as-shipped and how it was repaired.
 
 > **State of the repo (as of the 2025-vintage run).** The data currently wired in
 > runs **1870–2025**, all four specs have been estimated, and the full figure set
-> (20 main + 90 appendix PDFs) has been produced. **Read Fixes.md before touching
-> the observation matrices or data files** — several things (the data layout,
-> Denmark wiring, the var-family prior knob) are subtle.
+> (20 main + 90 appendix PDFs) has been produced. **Before touching the observation
+> matrices or data files, read §2 (data layout) and §7 (customization)** — several
+> things (the data layout, Denmark/country wiring, the var-family prior knob) are
+> subtle.
 
 ---
 
@@ -264,7 +263,7 @@ Two table scripts, both writing LaTeX into `tables/`:
   new variant, copy `MainModel1.m`, change the header, `filename`, and that one
   divisor — nothing else. (Do **not** copy the old `MainModel1_var02…50.m` data
   loaders: they still use the obsolete 67-column layout; regenerate from
-  `MainModel1.m` instead. See Fixes.md §5.)
+  `MainModel1.m` instead.)
 - **The Model 3 inflation-trend prior (A vs B).** `MainModel3.m` (default, version
   **B**) sets the `SC0tr` inflation entry to `sqrt(2)` → prior 1/50, matching
   Models 1 & 2 and the paper. `MainModel3_A.m` uses `2` → 1/25 (the original,
