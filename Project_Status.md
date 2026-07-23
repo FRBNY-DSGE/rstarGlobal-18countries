@@ -242,18 +242,31 @@ reproduce the deck's cells exactly. Note the deck carries the 90% interval thoug
 its footnote says 95%. Consuming `.tex` needs `\usepackage{makecell}`.
 
 ### Annual update runbook (next year, e.g. 2025 → 2026)
+0. **Sync with `master` FIRST — this is a shared repo.** Before touching anything,
+   see whether collaborators pushed since last year (this bit us once — Elena's
+   "Update MainModel2" landed mid-session):
+   ```bash
+   cd /data/dsge_data_dir/rstarGlobal-18countries
+   git fetch origin
+   git log --oneline HEAD..origin/master   # commits on master you don't have
+   git status                              # any uncommitted local changes?
+   ```
+   If `HEAD..origin/master` is non-empty, `git pull` (update **in place**) and skim
+   what changed — especially `MainModel*.m` and the data pipeline. **Do NOT do a
+   fresh `git clone` into a new dir**: `results/*.mat` (~150 GB) and
+   `scripts/data/api_keys.py` are gitignored and live only locally — a clone loses
+   them. Update in place so they survive.
 1. **Update the data.** Refresh to the new year and wire it into `indata/` — see
    INSTRUCTIONS_FOR_AI.md §0 and `scripts/data/DATA_UPDATED.md`: bump `FETCH_END`,
    run the pull, copy the vintage over the plain name, bump `T1` in each
-   `MainModel*.m`. Manual step: refresh `indata/raw/f1.1-data.csv` (Australia).
-2. **Pull the code from `master`.** `git clone` / `git pull` this repo — the
-   runnable pipeline (scripts, drivers, wired data) lives on `master`.
-3. **Run the scripts** (cluster, `matlab20a-batch-withemail`): estimate Models 1 & 2
+   `MainModel*.m`. Australia (`stir_au`) is auto-fetched now; only refresh
+   `indata/raw/f1.1-data.csv` by hand if that fetch fails (DATA_UPDATED.md §1b).
+2. **Run the scripts** (cluster, `matlab20a-batch-withemail`): estimate Models 1 & 2
    via `run_model1.m` / `run_model2.m` (and 3 / var01 if wanted); then the figure
    jobs `make_figs_m1.m` / `make_figs_m2.m` / `make_figs_m3.m` — **`make_figs_m1.m`
    now also regenerates the `update/` CSVs + PNGs** as a side effect (no separate
    step) — and `run_tables.m` for the `GlobalUS_*.tex` (incl. slide-format) tables.
-4. **Upload to GitHub.** Commit and push BOTH the new code and the new results —
+3. **Upload to GitHub.** Commit and push BOTH the new code and the new results —
    the updated `update/` files (and README if names change) plus any script edits.
    Do NOT commit `results/*.mat` (huge) or `scripts/data/api_keys.py` (secret);
    both are gitignored.

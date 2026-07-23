@@ -23,6 +23,16 @@ published paper **plus Denmark**).
 This is the common case. The scripts hold *no* hard-coded end-year anchors except
 the two knobs below, so updating the sample is short. **Full checklist:**
 
+0. **Sync with `master` first — this is a shared repo.** Others may have pushed
+   since last year (it happened once). Before anything else:
+   ```bash
+   git fetch origin && git log --oneline HEAD..origin/master && git status
+   ```
+   If `master` is ahead, `git pull` (update **in place**) and skim what changed
+   before touching the pipeline. Do **not** fresh-`clone` into a new dir —
+   `results/*.mat` (~150 GB) and `scripts/data/api_keys.py` are gitignored and
+   exist only locally; a clone loses them.
+
 1. **Pull the new year.** In `scripts/data/master-pull.py` set `FETCH_END = 2026`
    (keep `ANCHOR`/2020 fixed — that is the fixed splice point, not the end year),
    then run it. See **[scripts/data/DATA.md](scripts/data/DATA.md)** for details,
