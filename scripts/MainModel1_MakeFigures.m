@@ -124,7 +124,7 @@ printpdf(gcf, [figpath 'fig1-Model1_Rshortbar-us.pdf'])
 
 % --- Public GitHub update/ artifacts: SAME figure handle -> PNG, plus CSVs. ---
 % Single source so the paper PDF and the repo PNG can never diverge again
-% (this is what replaced the old make_update.m). See Project_Status.md S8.
+% (this is what replaced the old make_update.m). See INSTRUCTIONS_FOR_AI.md S4.
 saveas(gcf, '../update/qRshort_bar_us_global_m1.png');
 update_hdr = 'Year,r* 2.5 percentile,r* 16 percentile,r* median,r* 84 percentile,r* 97.5 percentile';
 write_update_csv('../update/qRshort_bar_global_m1.csv', update_hdr, Year, qRshort_bar);

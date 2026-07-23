@@ -5,8 +5,7 @@ Estimate and plot **Model 1** (Baseline), **Model 2** (Convenience Yield), and
 prior, needed for Figure 2). All models are **18 countries** (the 17 in the
 published paper **plus Denmark**).
 
-> This supersedes the original `INSTRUCTIONS.md` (renamed **`INSTRUCTIONS_OLD.md`**)
-> for anyone re-running the model.
+> This supersedes the original `INSTRUCTIONS.md` for anyone re-running the model.
 > It reflects the fixes made during the 2025-vintage run; see **[Fixes.md](Fixes.md)**
 > for the full list of what was broken as-shipped and how it was repaired.
 

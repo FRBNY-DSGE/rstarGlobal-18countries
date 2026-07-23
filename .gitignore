@@ -23,3 +23,6 @@ scripts/data/master-pull_check.py
 
 # Python bytecode cache
 __pycache__/
+
+# local working log — not for the shared repo
+Project_Status.md
