@@ -58,7 +58,20 @@ playwright install chromium
   ```
   Both keys are **long-lived** (they don't expire like short-lived tokens), so this
   is essentially a one-time setup you rarely revisit. Verify them with a quick live
-  call before a pull; only if one is rejected do you need a fresh one:
+  call before a pull (prints pass/fail, never the key); only if one is rejected do
+  you need a fresh one:
+  ```python
+  import requests, urllib.parse
+  from api_keys import FRED_KEY, BDF_KEY
+  r = requests.get("https://api.stlouisfed.org/fred/series",
+      params={"series_id":"GNPCA","api_key":FRED_KEY,"file_type":"json"}, timeout=25)
+  print("FRED_KEY:", "VALID" if r.status_code==200 else f"BAD {r.status_code}")
+  u = ("https://webstat.banque-france.fr/api/explore/v2.1/catalog/datasets/observations/exports/json?"
+      + urllib.parse.urlencode({"refine":'series_key:"ECOFI.INR.FR.FITB_PA._Z.D"',
+        "where":'time_period_start >= "2024-01-01"'}))
+  r = requests.get(u, headers={"Authorization": f"Apikey {BDF_KEY}"}, timeout=30)
+  print("BDF_KEY :", "VALID" if r.status_code==200 else f"BAD {r.status_code}")
+  ```
   - **FRED_KEY** (US series): sign in at <https://fredaccount.stlouisfed.org/apikeys>
     and copy the 32-character key (free account).
   - **BDF_KEY** (French series): log in at **<https://webstat.banque-france.fr/account>**,

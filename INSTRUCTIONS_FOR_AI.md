@@ -194,6 +194,10 @@ Each `make_figs_*` prints `FIGURES_DONE model N` on success; if a block errors i
 logs `FIGURE SCRIPT ERROR` (in `make_figs_m*.e<jobid>`) and still exits — check
 for that marker to confirm a run was complete, not just finished.
 
+> **Cheap pre-submit check** (catches an edit that only errors at run time, before
+> a multi-hour render): `matlab -nodisplay -r "checkcode('MainModel1_MakeFigures.m'), exit"`
+> — repeat per model. No parse errors ⇒ safe to submit.
+
 Figure memory ≈ the `.mat` size expanded in RAM: M1 ~80 GB, M2 ~64 GB, M3 ~110 GB.
 
 > **`make_figs_m1` also writes the public `update/` artifacts.** The `fig1` and
