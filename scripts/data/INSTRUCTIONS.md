@@ -114,7 +114,7 @@ where the figure scripts look; then it `exit`s.
 
 ```bash
 cd scripts
-S=/data/dsge_data_dir/mdn/rstarGlobal-18countries/scripts
+S=/data/dsge_data_dir/rstarGlobal-18countries/scripts
 matlab20a-batch-withemail 130 $S/run_model1.m   # -> results/OutputModel1.mat (+ copy to results/18/)
 matlab20a-batch-withemail 110 $S/run_model2.m   # -> results/OutputModel2.mat (+ copy to results/18/)
 matlab20a-batch-withemail 130 $S/run_model3.m   # -> results/OutputModel3_new.mat
@@ -209,7 +209,7 @@ create `make_figs_m1/2/3.m` following that pattern (`cd` to the absolute
 
 ```bash
 cd scripts
-S=/data/dsge_data_dir/mdn/rstarGlobal-18countries/scripts
+S=/data/dsge_data_dir/rstarGlobal-18countries/scripts
 matlab20a-batch-withemail 80 $S/make_figs_m1.m   # loads OutputModel1.mat (+ var01)
 matlab20a-batch-withemail 48 $S/make_figs_m2.m   # loads OutputModel2.mat
 matlab20a-batch-withemail 110 $S/make_figs_m3.m  # loads OutputModel3_new.mat (36 GB -> needs ~110 GB)
